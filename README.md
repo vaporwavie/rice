@@ -67,17 +67,43 @@ Omarchy-style: square corners, solid 2px accent borders, no blur or shadows, a f
 
 ## Layout
 
-Configuration lives in this directory. Hyprland reads `hyprland.lua`, which requires `binds.lua` and `rules.lua` and starts `session-start`. Display scale is the `scale` value on the DP-1 line in `hyprland.lua` (1.5, a 2560x1440 logical desktop). Bar, launcher, and notification font sizes are in logical pixels, so bump them when lowering the scale.
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 2 3 4  active window           14:32  standup in 12m   cpu mem net bt dsp vol pwr tray │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│                                  ┌────────────────────┐           ┌────────────────────┐ │
+│ ┌────────────────────────────────│ calendar panel     │───────────│ notifications,     │ │
+│ │ kitty                          │ (click the clock)  │           │ meeting toast      │ │
+│ │                                │                    │           │                    │ │
+│ │                                │                    │           └────────────────────┘ │
+│ │                                │                    │                                │ │
+│ │                                └────────────────────┘  Helium                        │ │
+│ │                                         │  │                                         │ │
+│ │                                         │  └─────────────────────────────────────────┘ │
+│ │                                         │                                              │
+│ │                                         │  ┌─────────────────────────────────────────┐ │
+│ │                                         │  │ Dolphin                                 │ │
+│ │                                         │  │                                         │ │
+│ │                                         │  │                                         │ │
+│ │                                  ┌────────────────┐                                  │ │
+│ │                                  │ Nina overlay   │                                  │ │
+│ │                                  └────────────────┘                                  │ │
+│ └─────────────────────────────────────────┘  └─────────────────────────────────────────┘ │
+│                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
-- `theme` renders `themes/day.env` or `themes/night.env` through `templates/` into `generated/` (Hyprland colors, shell palette, Waybar colors, Fuzzel, Dunst, Hyprlock) and reloads whatever changed. It also sets the wallpaper, the GTK and portal color scheme, and the Plasma color scheme, so Kitty, Helium, and Qt apps follow. `theme auto` follows the schedule, `day`, `night`, and `toggle` hold until the next scheduled switch, `status` prints the current mode. Hyprland runs `theme auto` every five minutes.
-- `daynight` prints the scheduled mode. Put `<latitude> <longitude>` in a `location` file here for real sunrise and sunset. Without it, day runs 07:00 to 18:30.
-- `session-start` starts `hyprland-session.target` (which the portals require), the bar, Dunst, Hypridle, KDE's authentication agent, gnome-keyring, clipboard history when cliphist is installed, and the entries in `~/.config/autostart`.
-- `shell/` is the Quickshell bar (`qs -p ~/.config/hypr/shell`). Workspaces and the active window on the left, the clock and the next event of the day in the middle, CPU, memory, network, Bluetooth, display, audio, power, and the tray on the right. Clicking the clock, network, Bluetooth, display, audio, or power icons opens a panel under the icon: calendar, connections (up and down, Wi-Fi radio, Wi-Fi networks), Bluetooth devices, monitor brightness, contrast, color preset and input over DDC/CI (`ddcutil`, scrolling the icon or XF86MonBrightness keys step brightness), sinks and sources with volume and mute, and the session menu. Tray icons open their menus in the same style. Colors come from `generated/shell-colors.json`, so `theme` recolors it in place. `qs -p ~/.config/hypr/shell ipc call panel toggle <audio|display|network|bluetooth|power|calendar|events>` opens a panel from a bind.
-- `shell/NotionCalendar.qml` reads `~/.config/notion-calendar-linux/panel.json`, the feed my Notion Calendar Linux build writes every 15 s while it runs. `shell/NextEvent.qml` shows today's next event and its countdown beside the clock, accent colored in the last five minutes, hidden when nothing is left today or the feed is older than 90 s. Clicking it opens `shell/EventsPanel.qml`, the upcoming events grouped by day, and middle click opens the app. The parsing lives in `shell/calendar-feed.mjs`, tested with `node --test shell/test/*.test.mjs`. `qs -p ~/.config/hypr/shell ipc call events state` prints the feed state.
-- `shell/NinaOverlay.qml` is Nina's recording panel as a layer-shell surface, bottom center of the focused monitor, red border and level bars while recording, amber while transcribing. `shell/Nina.qml` follows `$XDG_RUNTIME_DIR/nina.sock` (`watch` stream, reconnects every 5 s while Nina is down). Nina itself runs with Overlay set to Hide and On launch set to Stay hidden. `qs -p ~/.config/hypr/shell ipc call nina state` prints the connection and overlay state.
-- `waybar/` is the previous bar, kept until the Quickshell one has survived a full day-night cycle.
-- `wallpapers/` holds the day and night images, `hypridle.conf` the lock and screen-off timers.
-- `lock`, `screenshot`, `browser`, and `autostart` are the helpers the binds call.
+The bar sits on top. Clicking the clock, the next event, network, Bluetooth, display, audio, or power opens a panel under that item, and tray icons open their menus the same way. Windows tile with dwindle, 10px outer gaps and 5px between them.
+
+| Path | Role |
+| --- | --- |
+| `hyprland.lua` | Entry point. Requires `binds.lua` and `rules.lua`, starts `session-start`, runs `theme auto` every five minutes |
+| `theme` | Renders `themes/*.env` through `templates/` into `generated/` and reloads what changed. Takes `auto`, `day`, `night`, `toggle`, `status` |
+| `daynight` | Prints the scheduled mode. `<latitude> <longitude>` in a `location` file gives real sunrise and sunset, otherwise day runs 07:00 to 18:30 |
+| `shell/` | The Quickshell bar, panels, meeting toast, and Nina overlay. Run with `qs -p ~/.config/hypr/shell`, test with `node --test shell/test/*.test.mjs` |
+| `lock`, `screenshot`, `browser`, `autostart` | Helpers the binds call |
+
+`qs -p ~/.config/hypr/shell ipc call panel toggle <audio|display|network|bluetooth|power|calendar|events>` opens a panel from a bind.
 
 ## Ported from KDE
 
