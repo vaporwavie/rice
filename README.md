@@ -1,4 +1,24 @@
-# Hyprland
+# rice
+
+My Hyprland setup on Fedora 44, living next to a Plasma install: Lua config for Hyprland 0.56, a Quickshell bar with panels, and day and night themes that switch at sunrise and sunset.
+
+## Install
+
+```sh
+git clone https://github.com/vaporwavie/rice.git ~/.config/hypr
+```
+
+The repo replaces `~/.config/hypr`, so move an existing one out of the way first. Then adjust what is specific to my machine:
+
+- `hyprlock.conf` sources `/home/powerstation/.config/hypr/generated/hyprlock.conf`. Change the home directory.
+- The `DP-1` line in `hyprland.lua` sets a 4K monitor at scale 1.5. Every other output falls back to its preferred mode.
+- The pointer settings in `hyprland.lua` target an MX Master 3S.
+
+Run `./theme auto` once to render `generated/`, which is gitignored.
+
+It expects `quickshell`, `kitty`, `fuzzel`, `dunst`, `hypridle`, `hyprlock`, `grim`, `slurp`, `wl-clipboard`, `jq`, `playerctl`, `nmcli`, `wpctl`, and `ddcutil`. See [Optional packages](#optional-packages) for the rest.
+
+## Sign in
 
 Log out. At the bottom left of the login screen, click the text `Desktop Session: Plasma`, choose Hyprland, and sign in. The text is a button even though it has no dropdown arrow. Plasma remains preselected on later visits to the login screen.
 
@@ -53,7 +73,7 @@ Configuration lives in this directory. Hyprland reads `hyprland.lua`, which requ
 - `daynight` prints the scheduled mode. Put `<latitude> <longitude>` in a `location` file here for real sunrise and sunset. Without it, day runs 07:00 to 18:30.
 - `session-start` starts `hyprland-session.target` (which the portals require), the bar, Dunst, Hypridle, KDE's authentication agent, gnome-keyring, clipboard history when cliphist is installed, and the entries in `~/.config/autostart`.
 - `shell/` is the Quickshell bar (`qs -p ~/.config/hypr/shell`). Workspaces and the active window on the left, the clock and the next event of the day in the middle, CPU, memory, network, Bluetooth, display, audio, power, and the tray on the right. Clicking the clock, network, Bluetooth, display, audio, or power icons opens a panel under the icon: calendar, connections (up and down, Wi-Fi radio, Wi-Fi networks), Bluetooth devices, monitor brightness, contrast, color preset and input over DDC/CI (`ddcutil`, scrolling the icon or XF86MonBrightness keys step brightness), sinks and sources with volume and mute, and the session menu. Tray icons open their menus in the same style. Colors come from `generated/shell-colors.json`, so `theme` recolors it in place. `qs -p ~/.config/hypr/shell ipc call panel toggle <audio|display|network|bluetooth|power|calendar|events>` opens a panel from a bind.
-- `shell/NotionCalendar.qml` reads `~/.config/notion-calendar-linux/panel.json`, the feed Notion Calendar Linux (`~/Documents/Codex/2026-09-11/mak/outputs/notion-calendar-linux`) writes every 15 s while it runs. `shell/NextEvent.qml` shows today's next event and its countdown beside the clock, accent colored in the last five minutes, hidden when nothing is left today or the feed is older than 90 s. Clicking it opens `shell/EventsPanel.qml`, the upcoming events grouped by day, and middle click opens the app. The parsing lives in `shell/calendar-feed.mjs`, tested with `node --test shell/test/*.test.mjs`. `qs -p ~/.config/hypr/shell ipc call events state` prints the feed state.
+- `shell/NotionCalendar.qml` reads `~/.config/notion-calendar-linux/panel.json`, the feed my Notion Calendar Linux build writes every 15 s while it runs. `shell/NextEvent.qml` shows today's next event and its countdown beside the clock, accent colored in the last five minutes, hidden when nothing is left today or the feed is older than 90 s. Clicking it opens `shell/EventsPanel.qml`, the upcoming events grouped by day, and middle click opens the app. The parsing lives in `shell/calendar-feed.mjs`, tested with `node --test shell/test/*.test.mjs`. `qs -p ~/.config/hypr/shell ipc call events state` prints the feed state.
 - `shell/NinaOverlay.qml` is Nina's recording panel as a layer-shell surface, bottom center of the focused monitor, red border and level bars while recording, amber while transcribing. `shell/Nina.qml` follows `$XDG_RUNTIME_DIR/nina.sock` (`watch` stream, reconnects every 5 s while Nina is down). Nina itself runs with Overlay set to Hide and On launch set to Stay hidden. `qs -p ~/.config/hypr/shell ipc call nina state` prints the connection and overlay state.
 - `waybar/` is the previous bar, kept until the Quickshell one has survived a full day-night cycle.
 - `wallpapers/` holds the day and night images, `hypridle.conf` the lock and screen-off timers.
