@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+# screenshot [region|screen|window]: saves to ~/Pictures/Screenshots and copies the image to the clipboard.
+set -euo pipefail
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$here/themes/$(cat "$here/generated/current" 2>/dev/null || echo night).env"
+dir=${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots
+mkdir -p "$dir"
+file="$dir/$(date +%Y-%m-%d_%H-%M-%S).png"
+case ${1:-region} in
+    region)
+        geometry=$(slurp -d -b "${BG}66" -c "${ACCENT}ff" -s 00000000 -w 1) || exit 0
+        grim -g "$geometry" "$file"
+        ;;
+    screen)
+        grim -o "$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')" "$file"
+        ;;
+    window)
+        geometry=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
+        grim -g "$geometry" "$file"
+        ;;
+    *) echo "usage: screenshot [region|screen|window]" >&2; exit 2 ;;
+esac
+wl-copy < "$file"
+notify-send -a Screenshot -i "$file" "Screenshot copied" "$(basename "$file")"

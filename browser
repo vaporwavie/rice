@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+# Opens the default browser from mimeapps.list, the same one KDE used.
+set -eu
+id=$(xdg-mime query default x-scheme-handler/https)
+for dir in "${XDG_DATA_HOME:-$HOME/.local/share}/applications" /usr/share/applications; do
+    if [[ -f $dir/$id ]]; then
+        exec /usr/bin/gio launch "$dir/$id"
+    fi
+done
+exec xdg-open about:blank

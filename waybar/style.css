@@ -1,0 +1,84 @@
+@import url("../generated/waybar-colors.css");
+
+* {
+    font-family: "Geist Mono", "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+window#waybar {
+    background: @bg;
+    color: @fg;
+}
+
+#workspaces {
+    padding: 0 4px;
+}
+
+#workspaces button {
+    padding: 0 6px;
+    margin: 0;
+    color: @muted;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    color: @fg;
+    border-bottom: 2px solid @accent;
+}
+
+#workspaces button.urgent {
+    color: @red;
+}
+
+#workspaces button:hover {
+    color: @fg;
+    background: transparent;
+}
+
+#window {
+    padding: 0 10px;
+    color: @muted;
+}
+
+window#waybar.empty #window {
+    padding: 0;
+}
+
+#clock {
+    padding: 0 8px;
+}
+
+#cpu,
+#memory,
+#network,
+#pulseaudio {
+    padding: 0 7px;
+}
+
+#tray {
+    padding: 0 8px 0 4px;
+}
+
+#network.disconnected {
+    color: @red;
+}
+
+#pulseaudio.muted {
+    color: @muted;
+}
+
+tooltip {
+    background: @bg;
+    border: 2px solid @accent;
+}
+
+tooltip label {
+    color: @fg;
+    padding: 2px;
+}

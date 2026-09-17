@@ -1,0 +1,34 @@
+[main]
+font=Geist Mono:size=13,JetBrainsMono Nerd Font:size=13
+dpi-aware=no
+terminal=${HOME}/.local/bin/kitty
+prompt="> "
+icon-theme=${ICON_THEME}
+icons-enabled=yes
+image-size-ratio=0.4
+width=40
+lines=10
+horizontal-pad=16
+vertical-pad=10
+inner-pad=6
+layer=overlay
+match-mode=fzf
+exit-on-keyboard-focus-loss=yes
+
+[colors]
+background=${BG}ff
+text=${FG}ff
+prompt=${MUTED}ff
+input=${FG}ff
+match=${ACCENT}ff
+selection=${BG_ELEV}ff
+selection-text=${FG}ff
+selection-match=${ACCENT}ff
+border=${ACCENT}ff
+
+[border]
+width=2
+radius=0
+
+[dmenu]
+exit-immediately-if-empty=yes

@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+pidof hyprlock >/dev/null && exit 0
+exec hyprlock -c "$here/generated/hyprlock.conf"

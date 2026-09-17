@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""Prints "day" or "night".
+
+Sunrise and sunset come from ~/.config/hypr/location, a file holding "<latitude> <longitude>"
+in decimal degrees. Without it, day runs from 07:00 to 18:30 local time.
+"""
+import math
+import os
+import sys
+import time
+from datetime import datetime
+
+FALLBACK_DAY = (7, 0)
+FALLBACK_NIGHT = (18, 30)
+
+
+def sun_events(lat, lon, now):
+    rad, deg = math.radians, math.degrees
+    jdate = now / 86400 + 2440587.5
+    n = math.ceil(jdate - 2451545.0 + 0.0008)
+    jstar = n + lon / 360
+    m = (357.5291 + 0.98560028 * jstar) % 360
+    c = 1.9148 * math.sin(rad(m)) + 0.02 * math.sin(rad(2 * m)) + 0.0003 * math.sin(rad(3 * m))
+    lam = (m + c + 180 + 102.9372) % 360
+    jtransit = 2451545.0 + jstar + 0.0053 * math.sin(rad(m)) - 0.0069 * math.sin(rad(2 * lam))
+    decl = math.asin(math.sin(rad(lam)) * math.sin(rad(23.4397)))
+    cos_w = (math.sin(rad(-0.833)) - math.sin(rad(lat)) * math.sin(decl)) / (math.cos(rad(lat)) * math.cos(decl))
+    if cos_w < -1 or cos_w > 1:
+        return None
+    w = deg(math.acos(cos_w))
+    to_unix = lambda j: (j - 2440587.5) * 86400
+    return to_unix(jtransit - w / 360), to_unix(jtransit + w / 360)
+
+
+def main():
+    now = time.time()
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "location")
+    try:
+        with open(path) as f:
+            lat, lon = (float(x) for x in f.read().split()[:2])
+        events = sun_events(lat, lon, now)
+    except (OSError, ValueError):
+        events = None
+    if events:
+        rise, set_ = events
+        print("day" if rise <= now < set_ else "night")
+        return
+    local = datetime.fromtimestamp(now)
+    minutes = local.hour * 60 + local.minute
+    start = FALLBACK_DAY[0] * 60 + FALLBACK_DAY[1]
+    end = FALLBACK_NIGHT[0] * 60 + FALLBACK_NIGHT[1]
+    print("day" if start <= minutes < end else "night")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,16 @@
+{
+  "mode": "${MODE}",
+  "bg": "#${BG}",
+  "bgAlt": "#${BG_ALT}",
+  "bgElev": "#${BG_ELEV}",
+  "border": "#${BORDER}",
+  "fg": "#${FG}",
+  "fgDim": "#${FG_DIM}",
+  "muted": "#${MUTED}",
+  "accent": "#${ACCENT}",
+  "accentAlt": "#${ACCENT_ALT}",
+  "red": "#${RED}",
+  "green": "#${GREEN}",
+  "yellow": "#${YELLOW}",
+  "cyan": "#${CYAN}"
+}

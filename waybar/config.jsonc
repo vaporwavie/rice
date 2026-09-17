@@ -1,0 +1,70 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 26,
+  "spacing": 0,
+  "modules-left": ["ext/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "network", "pulseaudio", "tray"],
+
+  "ext/workspaces": {
+    "format": "{name}",
+    "on-click": "activate",
+    "sort-by": "id"
+  },
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 64,
+    "separate-outputs": true,
+    "rewrite": {
+      "(.*) - Helium$": "$1",
+      "(.*) - Google Chrome$": "$1",
+      "(.*) — Zen Browser$": "$1",
+      "(.*) — Dolphin$": "$1"
+    }
+  },
+  "clock": {
+    "interval": 10,
+    "format": "{:%A %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "weeks-pos": "",
+      "format": { "today": "<b><u>{}</u></b>" }
+    }
+  },
+  "cpu": {
+    "interval": 3,
+    "format": "󰘚",
+    "tooltip-format": "{usage}% cpu"
+  },
+  "memory": {
+    "interval": 5,
+    "format": "󰍛",
+    "tooltip-format": "{used:0.1f} GiB of {total:0.1f} GiB"
+  },
+  "network": {
+    "interval": 5,
+    "format-ethernet": "󰈀",
+    "format-wifi": "󰤨",
+    "format-disconnected": "󰤮",
+    "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes}  󰕒 {bandwidthUpBytes}",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)  {ipaddr}/{cidr}\n󰇚 {bandwidthDownBytes}  󰕒 {bandwidthUpBytes}",
+    "on-click": "nm-connection-editor"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": {
+      "headphone": "󰋋",
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "tooltip-format": "{volume}%  {desc}"
+  },
+  "tray": {
+    "spacing": 12,
+    "icon-size": 14
+  }
+}

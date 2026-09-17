@@ -1,0 +1,28 @@
+# Rendered themes and current session state.
+/generated/
+
+# Private coordinates used by daynight.
+/location
+
+# Local credentials and agent overrides.
+.env
+.env.*
+!.env.example
+!.env.sample
+AGENTS.local.md
+
+# Editor backups and desktop metadata.
+*~
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+.directory
+
+# Local caches and logs.
+.cache/
+__pycache__/
+*.pyc
+*.log
+node_modules/

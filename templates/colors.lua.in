@@ -1,0 +1,17 @@
+return {
+    name = "${NAME}",
+    mode = "${MODE}",
+    bg = "${BG}",
+    bg_alt = "${BG_ALT}",
+    bg_elev = "${BG_ELEV}",
+    border = "${BORDER}",
+    fg = "${FG}",
+    fg_dim = "${FG_DIM}",
+    muted = "${MUTED}",
+    accent = "${ACCENT}",
+    accent_alt = "${ACCENT_ALT}",
+    red = "${RED}",
+    green = "${GREEN}",
+    yellow = "${YELLOW}",
+    cyan = "${CYAN}",
+}

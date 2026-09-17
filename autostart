@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+# Launches ~/.config/autostart entries the way a desktop session would, honoring Hidden, OnlyShowIn, and NotShowIn.
+desktop=${XDG_CURRENT_DESKTOP:-Hyprland}
+for entry in "${XDG_CONFIG_HOME:-$HOME/.config}"/autostart/*.desktop; do
+    [[ -e $entry ]] || continue
+    grep -qE '^Hidden=true' "$entry" && continue
+    only=$(sed -n 's/^OnlyShowIn=//p' "$entry")
+    if [[ -n $only && ";$only;" != *";$desktop;"* ]]; then continue; fi
+    notin=$(sed -n 's/^NotShowIn=//p' "$entry")
+    if [[ ";$notin;" == *";$desktop;"* ]]; then continue; fi
+    /usr/bin/gio launch "$entry" >/dev/null 2>&1 &
+done

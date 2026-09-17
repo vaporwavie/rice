@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+set -u
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+children=()
+trap 'kill "${children[@]}" 2>/dev/null || true; systemctl --user stop hyprland-session.target' EXIT
+run() { "$@" & children+=("$!"); }
+has() { command -v "$1" >/dev/null 2>&1; }
+
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE KDE_SESSION_VERSION
+systemctl --user start hyprland-session.target
+if has swww-daemon; then
+    run swww-daemon
+    sleep 0.3
+fi
+"$here/theme" auto
+run qs -p "$here/shell"
+run dunst -conf "$here/generated/dunstrc"
+run hypridle -c "$here/hypridle.conf"
+run /usr/libexec/kf6/polkit-kde-authentication-agent-1
+gnome-keyring-daemon --start --components=secrets >/dev/null 2>&1
+if has cliphist; then
+    run wl-paste --type text --watch cliphist store
+    run wl-paste --type image --watch cliphist store
+fi
+"$here/autostart"
+wait
