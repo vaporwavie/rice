@@ -115,6 +115,6 @@ The bar sits on top. Clicking the clock, the next event, network, Bluetooth, dis
 
 ## Optional packages
 
-`quickshell` is required for the bar. `sudo dnf install swww cliphist` adds the wallpaper daemon (falls back to a solid color otherwise) and clipboard history. `swaybg` works as a wallpaper fallback too.
+`quickshell` is required for the bar. `sudo dnf install awww cliphist` adds the wallpaper daemon (falls back to a solid color otherwise) and clipboard history. `swaybg` works as a wallpaper fallback too.
 
 Packages come from Fedora and the restricted [sdegler/hyprland COPR](https://copr.fedorainfracloud.org/coprs/sdegler/hyprland/). Its allowlist is in `/etc/yum.repos.d/hyprland-restricted.repo`. Plasma's default is set in `/etc/plasmalogin.conf.d/90-plasma-default.conf`. Desktop-specific portal files are in `~/.config/xdg-desktop-portal/`.

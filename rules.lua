@@ -28,7 +28,7 @@ return function(ctx)
     rule({ tag = "floating-window" }, { size = "875 600" })
 
     hl.layer_rule({ name = "selection-still", match = { namespace = "^(selection)$" }, no_anim = true })
-    hl.layer_rule({ name = "wallpaper-still", match = { namespace = "^(wallpaper|swww-daemon)$" }, no_anim = true })
+    hl.layer_rule({ name = "wallpaper-still", match = { namespace = "^(wallpaper|awww-daemon)$" }, no_anim = true })
 
     hl.workspace_rule({ workspace = "special:scratch", gaps_out = 60, on_created_empty = ctx.terminal })
 end
