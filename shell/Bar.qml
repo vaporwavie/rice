@@ -41,6 +41,7 @@ PanelWindow {
         Memory { }
         NetworkButton { bar: bar }
         BluetoothButton { bar: bar }
+        KeevyButton { bar: bar }
         DisplayButton { bar: bar }
         AudioButton { bar: bar }
         PowerButton { bar: bar }

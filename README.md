@@ -30,6 +30,7 @@ Log out. At the bottom left of the login screen, click the text `Desktop Session
 | Super+Space, Alt+Space, Alt+F2 | App launcher |
 | Super+E | Dolphin |
 | Super+B | Default browser |
+| Super+PageDown | Keevy machine picker |
 | Super+Q, Alt+F4 | Close window |
 | Super+Ctrl+Esc | Kill window |
 | Super+F | Maximize |
@@ -93,7 +94,9 @@ Omarchy-style: square corners, solid 2px accent borders, no blur or shadows, a f
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-The bar sits on top. Clicking the clock, the next event, network, Bluetooth, display, audio, or power opens a panel under that item, and tray icons open their menus the same way. Windows tile with dwindle, 10px outer gaps and 5px between them.
+The bar sits on top. Clicking the clock, the next event, network, Bluetooth, Keevy, display, audio, or power opens a panel under that item, and tray icons open their menus the same way. Windows tile with dwindle, 10px outer gaps and 5px between them.
+
+Keevy reads machine profiles from `~/Workspace/kvm` each time its panel opens. Number keys 1 to 3 select the Easy-Switch slot. Up/Down or J/K select a row, Enter switches, and Escape closes. It runs the existing Keevy switch scripts and shows failures in the panel. Set `KEEVY_PICKER` in Quickshell's environment if the picker lives elsewhere. Test the integration without switching hardware with `/usr/bin/python3 -m unittest discover -s shell/test -p 'test_keevy.py'`.
 
 | Path | Role |
 | --- | --- |

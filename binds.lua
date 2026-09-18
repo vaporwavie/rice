@@ -11,6 +11,7 @@ return function(ctx)
     hl.bind("ALT + F2", hl.dsp.exec_cmd(launcher))
     hl.bind(mod .. " + E", hl.dsp.exec_cmd("dolphin"))
     hl.bind(mod .. " + B", hl.dsp.exec_cmd(cfg .. "/browser"))
+    hl.bind(mod .. " + Page_Down", hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call panel toggle keevy"))
 
     -- Session
     hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd(cfg .. "/lock"))
