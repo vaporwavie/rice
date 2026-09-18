@@ -1,0 +1,8 @@
+[Unit]
+Description=Hyprland session
+Documentation=man:systemd.special(7)
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+Wants=quickshell.service dunst.service hypridle.service plasma-polkit-agent.service
+Wants=awww.service cliphist@text.service cliphist@image.service

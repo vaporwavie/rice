@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+# Links systemd/ into the user unit directory. The target's Wants= lists what starts, so nothing needs enabling.
+set -euo pipefail
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+dest="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+mkdir -p "$dest"
+for unit in "$here"/systemd/*; do
+    ln -sfn "$unit" "$dest/${unit##*/}"
+done
+systemctl --user daemon-reload
