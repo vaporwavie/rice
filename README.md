@@ -14,7 +14,7 @@ The repo replaces `~/.config/hypr`, so move an existing one out of the way first
 - The `DP-1` line in `hyprland.lua` sets a 4K monitor at scale 1.5. Every other output falls back to its preferred mode.
 - The pointer settings in `hyprland.lua` target an MX Master 3S.
 
-Run `./theme auto` once to render `generated/`, which is gitignored.
+Run `./theme auto` once to render `generated/`, which is gitignored, and `./install-units` once to link `systemd/` into `~/.config/systemd/user`.
 
 It expects `quickshell`, `kitty`, `fuzzel`, `dunst`, `hypridle`, `hyprlock`, `grim`, `slurp`, `wl-clipboard`, `jq`, `playerctl`, `nmcli`, `wpctl`, and `ddcutil`. See [Optional packages](#optional-packages) for the rest.
 
@@ -98,6 +98,8 @@ The bar sits on top. Clicking the clock, the next event, network, Bluetooth, dis
 | Path | Role |
 | --- | --- |
 | `hyprland.lua` | Entry point. Requires `binds.lua` and `rules.lua`, starts `session-start`, runs `theme auto` every five minutes |
+| `session-start` | Imports the session environment into systemd, starts `hyprland-session.target`, runs `~/.config/autostart`, and stops the target when the compositor exits |
+| `systemd/` | The target and the units it wants: bar, Dunst, Hypridle, polkit agent, awww, clipboard history. They restart on failure. `systemctl --user status quickshell` and `journalctl --user -u quickshell` for the bar |
 | `theme` | Renders `themes/*.env` through `templates/` into `generated/` and reloads what changed. Takes `auto`, `day`, `night`, `toggle`, `status` |
 | `daynight` | Prints the scheduled mode. `<latitude> <longitude>` in a `location` file gives real sunrise and sunset, otherwise day runs 07:00 to 18:30 |
 | `shell/` | The Quickshell bar, panels, meeting toast, and Nina overlay. Run with `qs -p ~/.config/hypr/shell`, test with `node --test shell/test/*.test.mjs` |

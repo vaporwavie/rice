@@ -4,7 +4,7 @@ Replace Waybar with a Quickshell bar whose icons open in-shell panels, the way o
 
 ## State (2026-09-16, evening)
 
-Steps 1 to 9 are done, the shell is live. Left: step 10 (memory) is done too, and the Waybar cleanup in step 8 waits for a full day-night cycle (remove `waybar/`, `templates/waybar-colors.css.in`, the `render waybar-colors.css` and `pkill -USR2 -x waybar` lines in `theme`, and the Waybar line in README).
+All steps are done, the shell is live and Waybar is removed. The bar and the other session daemons run as systemd user units from `systemd/`.
 
 - Hyprland 0.56.2 Lua config in `~/.config/hypr`, README.md there is current. Scale 1.25 on DP-1.
 - `theme` renders `templates/*.in` into `generated/` from `themes/{day,night}.env` and reloads consumers. Any new consumer gets a template plus a reload line in `theme`.
@@ -76,4 +76,4 @@ Steps 1 to 9 are done, the shell is live. Left: step 10 (memory) is done too, an
 
 ## Resume
 
-New session: read this file, `~/.config/hypr/README.md`, and the memory `hyprland-rice-powerstation`. If a full day-night cycle has passed with the Quickshell bar (check `generated/current` flipped since 2026-09-16 evening and the bar still looks right), do the Waybar cleanup listed under State. Nested test helper from the last session: start a nested Hyprland, then `qs -p ~/.config/hypr/shell` with that instance's `HYPRLAND_INSTANCE_SIGNATURE` and `WAYLAND_DISPLAY`, drive panels with `qs -p ~/.config/hypr/shell ipc call panel toggle <name>`, screenshot with `grim`. Quickshell hides `console.log`; use `console.warn`. A hand-written `qmldir` in `shell/` hides the sibling types, let Quickshell synthesize it. Do not name a singleton `Network`, it clashes with `Quickshell.Networking`.
+New session: read this file, `~/.config/hypr/README.md`, and the memory `hyprland-rice-powerstation`. Nested test helper from the last session: start a nested Hyprland, then `qs -p ~/.config/hypr/shell` with that instance's `HYPRLAND_INSTANCE_SIGNATURE` and `WAYLAND_DISPLAY`, drive panels with `qs -p ~/.config/hypr/shell ipc call panel toggle <name>`, screenshot with `grim`. Quickshell hides `console.log`; use `console.warn`. A hand-written `qmldir` in `shell/` hides the sibling types, let Quickshell synthesize it. Do not name a singleton `Network`, it clashes with `Quickshell.Networking`.

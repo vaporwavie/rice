@@ -1,26 +1,26 @@
 #!/usr/bin/bash
 set -u
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-children=()
-trap 'kill "${children[@]}" 2>/dev/null || true; systemctl --user stop hyprland-session.target' EXIT
-run() { "$@" & children+=("$!"); }
+trap 'systemctl --user stop hyprland-session.target' EXIT
 has() { command -v "$1" >/dev/null 2>&1; }
 
-dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE KDE_SESSION_VERSION
-systemctl --user start hyprland-session.target
-if has swww-daemon; then
-    run swww-daemon
-    sleep 0.3
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE KDE_SESSION_VERSION \
+    XCURSOR_THEME XCURSOR_SIZE HYPRCURSOR_SIZE QT_QPA_PLATFORMTHEME QT_WAYLAND_DISABLE_WINDOWDECORATION QT_AUTO_SCREEN_SCALE_FACTOR \
+    ELECTRON_OZONE_PLATFORM_HINT GDK_BACKEND NOTION_CALENDAR_MEETING_POPUP
+
+# The wallpaper daemon comes up first so theme can paint before the bar appears.
+systemctl --user start awww.service
+if has awww; then
+    for _ in {1..20}; do
+        awww query >/dev/null 2>&1 && break
+        sleep 0.1
+    done
 fi
 "$here/theme" auto
-run qs -p "$here/shell"
-run dunst -conf "$here/generated/dunstrc"
-run hypridle -c "$here/hypridle.conf"
-run /usr/libexec/kf6/polkit-kde-authentication-agent-1
+systemctl --user start hyprland-session.target
 gnome-keyring-daemon --start --components=secrets >/dev/null 2>&1
-if has cliphist; then
-    run wl-paste --type text --watch cliphist store
-    run wl-paste --type image --watch cliphist store
-fi
 "$here/autostart"
-wait
+
+# The units restart on failure, so the target has to stop when the compositor goes, crash included.
+read -r compositor < "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprland.lock"
+tail --pid="$compositor" -s 0.2 -f /dev/null
