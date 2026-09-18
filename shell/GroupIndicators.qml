@@ -17,7 +17,10 @@ Scope {
         return Quickshell.iconPath(entry && entry.icon ? entry.icon : appId, "application-x-executable")
     }
 
-    Component.onCompleted: Hyprland.refreshToplevels()
+    Component.onCompleted: {
+        Hyprland.refreshMonitors()
+        Hyprland.refreshToplevels()
+    }
 
     Connections {
         target: Hyprland
@@ -27,7 +30,10 @@ Scope {
     Timer {
         id: refresh
         interval: 40
-        onTriggered: Hyprland.refreshToplevels()
+        onTriggered: {
+            Hyprland.refreshMonitors()
+            Hyprland.refreshToplevels()
+        }
     }
 
     // Hyprland does not emit geometry events while dragging or resizing windows.

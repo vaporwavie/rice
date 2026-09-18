@@ -6,9 +6,10 @@ import vm from "node:vm"
 const context = vm.createContext({})
 vm.runInContext(readFileSync(new URL("../group-dots.js", import.meta.url), "utf8"), context)
 const indicators = (clients, monitor) => JSON.parse(JSON.stringify(context.indicators(clients, monitor)))
-const monitor = { id: 1, x: 1920, y: -200 }
+const monitor = { id: 1, x: 1920, y: -200, activeWorkspace: { id: 1 }, specialWorkspace: { id: 0 } }
 const client = {
     address: "b", grouped: ["a", "b", "c"], monitor: 1,
+    workspace: { id: 1 },
     visible: true, mapped: true, hidden: false, fullscreen: 0,
     at: [2020, -100], size: [800, 600]
 }
@@ -40,4 +41,21 @@ test("omits inactive members, other monitors, single windows and fullscreen wind
         { fullscreen: 2 }, { monitor: 0 }, { grouped: ["b"] }, { grouped: [] }
     ]) assert.deepEqual(indicators([{ ...client, ...change }], monitor), [])
     assert.deepEqual(indicators([client], null), [])
+})
+
+test("hides a visible group on other workspaces and restores it when switching back", () => {
+    assert.equal(indicators([client], monitor).length, 1)
+    assert.deepEqual(indicators([client], { ...monitor, activeWorkspace: { id: 3 } }), [])
+    assert.equal(indicators([client], monitor).length, 1)
+    assert.deepEqual(indicators([{ ...client, workspace: undefined }], monitor), [])
+    assert.deepEqual(indicators([client], { ...monitor, activeWorkspace: undefined }), [])
+})
+
+test("shows special-workspace groups only while their workspace is open", () => {
+    const special = { ...client, workspace: { id: -99 } }
+    const open = { ...monitor, specialWorkspace: { id: -99 } }
+    assert.deepEqual(indicators([special], monitor), [])
+    assert.equal(indicators([special], open).length, 1)
+    assert.deepEqual(indicators([client], open), [])
+    assert.deepEqual(indicators([special], { ...open, id: 2 }), [])
 })

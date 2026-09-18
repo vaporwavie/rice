@@ -1,7 +1,11 @@
 function indicators(clients, monitor) {
     if (!monitor) return []
+    var workspace = monitor.specialWorkspace && monitor.specialWorkspace.id
+        ? monitor.specialWorkspace : monitor.activeWorkspace
+    if (!workspace) return []
     return clients.filter(function(client) {
         return client.visible && client.mapped && !client.hidden && !client.fullscreen
+            && client.workspace && client.workspace.id === workspace.id
             && client.monitor === monitor.id && client.grouped && client.grouped.length > 1
     }).map(function(client) {
         return {
