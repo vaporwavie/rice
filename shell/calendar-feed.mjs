@@ -1,4 +1,6 @@
 const STALE_MS = 90000
+const ALERT_LEAD_MS = 60000
+const ALERT_LINGER_MS = 300000
 
 function read(text, now) {
     let feed
@@ -20,7 +22,9 @@ export function parseFeed(text, now) {
     if (!feed || !Array.isArray(feed.events)) return []
     return feed.events
         .filter(event => event && typeof event.title === "string" && event.title !== "" && Number.isFinite(event.startsAt))
-        .map(event => ({ title: event.title, startsAt: event.startsAt }))
+        .map(event => typeof event.join === "string" && event.join !== ""
+            ? { title: event.title, startsAt: event.startsAt, join: event.join }
+            : { title: event.title, startsAt: event.startsAt })
         .sort((a, b) => a.startsAt - b.startsAt)
 }
 
@@ -68,4 +72,15 @@ export function groupByDay(events, now) {
         group.events.push(event)
     }
     return groups
+}
+
+export function eventKey(event) {
+    return event.startsAt + " " + event.title
+}
+
+export function nextAlert(current, dismissed, events, now) {
+    const due = events.find(event => event.startsAt >= now && event.startsAt - now <= ALERT_LEAD_MS && eventKey(event) !== dismissed)
+    if (due) return due
+    if (current && now - current.startsAt <= ALERT_LINGER_MS && eventKey(current) !== dismissed) return current
+    return null
 }

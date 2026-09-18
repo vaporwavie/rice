@@ -16,6 +16,11 @@ ShellRoot {
         NinaOverlay { required property var modelData; screen: modelData }
     }
 
+    Variants {
+        model: Quickshell.screens
+        MeetingToast { required property var modelData; screen: modelData }
+    }
+
     IpcHandler {
         target: "theme"
         function reload(): void { Theme.reload() }
@@ -40,6 +45,8 @@ ShellRoot {
             return (NotionCalendar.live ? "live " : "stale ") + NotionCalendar.events.length
                 + (next ? " next " + next.title + " " + NotionCalendar.remaining(next.startsAt) : "")
         }
+        function alert(): string { return NotionCalendar.alert ? NotionCalendar.alert.title : "" }
+        function dismiss(): void { NotionCalendar.dismiss() }
     }
 
     IpcHandler {

@@ -1,6 +1,6 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { isLive, parseFeed, upcoming, nextToday, remaining, dayLabel, groupByDay } from "../calendar-feed.mjs"
+import { isLive, parseFeed, upcoming, nextToday, remaining, dayLabel, groupByDay, eventKey, nextAlert } from "../calendar-feed.mjs"
 
 const at = (day, hours, minutes = 0) => new Date(2026, 8, day, hours, minutes).getTime()
 const now = at(17, 10)
@@ -77,4 +77,31 @@ test("groupByDay keeps order and splits on the local day", () => {
         ["Today", ["A", "B"]],
         ["Tomorrow", ["C"]],
     ])
+})
+
+test("parseFeed keeps the join label only when the app sent one", () => {
+    const events = parseFeed(feed([
+        { title: "Call", startsAt: at(17, 11), join: "Join Zoom meeting" },
+        { title: "Focus", startsAt: at(17, 12), join: "" },
+    ]), now)
+    assert.deepEqual(events, [
+        { title: "Call", startsAt: at(17, 11), join: "Join Zoom meeting" },
+        { title: "Focus", startsAt: at(17, 12) },
+    ])
+})
+
+test("nextAlert raises an event in its last minute and holds it past the start", () => {
+    const call = { title: "Call", startsAt: at(17, 10, 1) }
+    assert.equal(nextAlert(null, "", [call], now - 1000), null)
+    assert.equal(nextAlert(null, "", [call], now), call)
+    assert.equal(nextAlert(call, "", [], at(17, 10, 6)), call)
+    assert.equal(nextAlert(call, "", [], at(17, 10, 6) + 1000), null)
+})
+
+test("nextAlert stays quiet after a dismissal and moves on to the next event", () => {
+    const call = { title: "Call", startsAt: at(17, 10, 1) }
+    const review = { title: "Review", startsAt: at(17, 10, 31) }
+    assert.equal(nextAlert(call, eventKey(call), [call], now), null)
+    assert.equal(nextAlert(call, eventKey(call), [], at(17, 10, 2)), null)
+    assert.equal(nextAlert(call, "", [review], at(17, 10, 30)), review)
 })

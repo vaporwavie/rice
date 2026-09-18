@@ -14,8 +14,24 @@ Singleton {
     readonly property var next: Feed.nextToday(events, now)
     readonly property var days: Feed.groupByDay(events, now)
 
+    property var alert: null
+    property string dismissed: ""
+
+    onEventsChanged: refreshAlert()
+    onNowChanged: refreshAlert()
+
     function remaining(startsAt) { return Feed.remaining(startsAt, now) }
     function openApp() { Qt.openUrlExternally("cron://") }
+    function refreshAlert() { alert = Feed.nextAlert(alert, dismissed, events, now) }
+    function dismiss() {
+        if (!alert) return
+        dismissed = Feed.eventKey(alert)
+        alert = null
+    }
+    function join() {
+        Quickshell.execDetached([Quickshell.env("HOME") + "/.local/bin/notion-calendar-linux", "--join"])
+        dismiss()
+    }
 
     FileView {
         id: file

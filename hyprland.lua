@@ -40,8 +40,8 @@ hl.env("QT_QPA_PLATFORMTHEME", "kde")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
-hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("GDK_BACKEND", "wayland,x11,*")
+hl.env("NOTION_CALENDAR_MEETING_POPUP", "off")
 
 if not testing then
     hl.on("hyprland.start", function()
