@@ -70,7 +70,11 @@ if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
     if [[ $prev != "$mode" ]]; then pkill -USR1 -x kitty 2>/dev/null || true; fi
 fi
 
-wall="$here/$WALLPAPER"
+wall="$gen/wallpaper.png"
+if changed_has shell-colors.json || [[ ! -f $wall ]]; then
+    node "$here/pillar/pillar.mjs" render --no-pillar --palette "$gen/shell-colors.json" --out "$wall" ||
+        echo "theme: wallpaper render failed" >&2
+fi
 if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
     if has awww && awww query >/dev/null 2>&1; then
         awww img "$wall" --transition-type fade --transition-duration 0.6 >/dev/null

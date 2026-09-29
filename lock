@@ -1,4 +1,7 @@
 #!/usr/bin/bash
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 pidof hyprlock >/dev/null && exit 0
+# The lock ground is the live column as it stands right now, ivy included.
+node "$here/pillar/pillar.mjs" render --y 54 --out "$here/generated/lock.png" 2>/dev/null ||
+    cp -f "$here/generated/wallpaper.png" "$here/generated/lock.png"
 exec hyprlock -c "$here/generated/hyprlock.conf"

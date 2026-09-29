@@ -4,7 +4,10 @@ import Quickshell.Io
 import qs
 
 ShellRoot {
-    GroupIndicators {}
+    Variants {
+        model: Quickshell.screens
+        Pillar { required property var modelData; screen: modelData }
+    }
 
     Variants {
         model: Quickshell.screens

@@ -5,113 +5,96 @@ general {
 
 animations {
     enabled = true
+    bezier = expo, 0.16, 1, 0.3, 1
+    animation = fadeIn, 1, 9, expo
+    animation = fadeOut, 1, 4, expo
+    animation = inputFieldDots, 1, 3, expo
+    animation = inputFieldColors, 1, 5, expo
 }
 
 background {
     monitor =
-    path = ${HOME}/.config/hypr/${WALLPAPER}
+    path = ${HOME}/.config/hypr/generated/lock.png
     color = rgb(${BG})
     brightness = ${LOCK_BRIGHTNESS}
-    contrast = 1.05
 }
 
 label {
     monitor =
-    text = $TIME
-    font_family = Geist Light
-    font_size = 112
+    text = cmd[update:60000] echo "<span letter_spacing='3000'>$(date +'%A · %-d %B' | tr a-z A-Z)</span>"
+    font_family = IBM Plex Mono
+    font_size = 13
+    color = rgb(${MUTED})
+    position = 0, 300
+    halign = center
+    valign = center
+}
+
+label {
+    monitor =
+    text = <span font_weight="340" letter_spacing="-3000">$TIME</span>
+    font_family = Fraunces
+    font_size = 200
     color = rgb(${FG})
-    position = 0, 210
+    position = 0, 150
     halign = center
     valign = center
 }
 
 label {
     monitor =
-    text = cmd[update:60000] date +"%A, %-d %B"
-    font_family = Geist Mono
-    font_size = 17
-    color = rgb(${FG_DIM})
-    position = 0, 118
-    halign = center
-    valign = center
-}
-
-shape {
-    monitor =
-    size = 440, 210
-    color = rgba(${BG}f2)
-    border_size = 2
-    border_color = rgb(${ACCENT})
-    rounding = 0
-    position = 0, -60
-    halign = center
-    valign = center
-}
-
-label {
-    monitor =
-    text = $USER
-    font_family = Geist Medium
-    font_size = 16
+    text = cmd[] echo "Welcome back, <span font_family='Fraunces' font_style='italic' font_weight='360'>$(getent passwd "$USER" | cut -d: -f5 | cut -d' ' -f1 | cut -d, -f1).</span>"
+    font_family = IBM Plex Sans
+    font_size = 22
     color = rgb(${FG})
-    position = 0, 0
+    position = 0, -20
     halign = center
     valign = center
 }
 
 input-field {
     monitor =
-    size = 320, 46
-    position = 0, -60
+    size = 320, 56
+    position = 0, -120
     halign = center
     valign = center
-    rounding = 0
-    outline_thickness = 2
-    outer_color = rgb(${BORDER})
+    rounding = -1
+    outline_thickness = 1
+    outer_color = rgb(${LINE_STRONG})
     inner_color = rgb(${BG_ALT})
     font_color = rgb(${FG})
-    font_family = Geist Mono
+    font_family = IBM Plex Mono
     check_color = rgb(${ACCENT})
     fail_color = rgb(${RED})
     capslock_color = rgb(${YELLOW})
-    dots_size = 0.22
-    dots_spacing = 0.35
+    dots_size = 0.18
+    dots_spacing = 0.6
     dots_center = true
+    dots_rounding = 0
     fade_on_empty = false
-    placeholder_text = <span foreground="##${MUTED}">password</span>
-    fail_text =
+    placeholder_text = <span foreground="##${MUTED}" font_family="IBM Plex Sans">Password  →</span>
+    fail_text = <span font_family="IBM Plex Mono" letter_spacing="2000">$FAIL</span>
+    fail_transition = 300
 }
 
 label {
     monitor =
-    text = $FAIL
-    font_family = Geist Mono
-    font_size = 12
-    color = rgb(${RED})
-    position = 0, -122
-    halign = center
-    valign = center
-}
-
-label {
-    monitor =
-    text = 󰌾  $LAYOUT
-    font_family = JetBrainsMono Nerd Font
+    text = cmd[] echo "<span letter_spacing='3000'>§ $(hostname | tr a-z A-Z)</span>"
+    font_family = IBM Plex Mono
     font_size = 12
     color = rgb(${MUTED})
-    position = -32, 28
-    halign = right
+    position = 0, 40
+    halign = center
     valign = bottom
 }
 
 label {
     monitor =
-    text = cmd[] hostname
-    font_family = Geist Mono
+    text = <span letter_spacing="2000">$LAYOUT</span>
+    font_family = IBM Plex Mono
     font_size = 12
     color = rgb(${MUTED})
-    position = 32, 28
-    halign = left
+    position = -40, 40
+    halign = right
     valign = bottom
 }
