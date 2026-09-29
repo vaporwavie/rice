@@ -79,6 +79,36 @@ return function(ctx)
     hl.bind(mod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
     hl.bind(mod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
     hl.bind(mod .. " + Tab", hl.dsp.focus({ workspace = "previous" }))
+    -- Tapping Super twice clears the screen to an empty desktop; Escape or another double tap returns.
+    local desktop = "name:desktop"
+    local away_from = nil
+    local armed = 0
+    local function on_desktop()
+        local ws = hl.get_active_workspace()
+        return ws and ws.name == "desktop"
+    end
+    local function leave_desktop()
+        hl.dispatch(hl.dsp.focus({ workspace = away_from or "previous" }))
+        away_from = nil
+    end
+    hl.bind("Super_L", function()
+        armed = armed + 1
+        if armed == 1 then
+            hl.timer(function() armed = 0 end, { timeout = 350, type = "oneshot" })
+            return
+        end
+        armed = 0
+        if on_desktop() then
+            leave_desktop()
+        else
+            local ws = hl.get_active_workspace()
+            away_from = ws and ws.id or nil
+            hl.dispatch(hl.dsp.focus({ workspace = desktop }))
+        end
+    end, { release = true, ignore_mods = true })
+    hl.bind("Escape", function()
+        if on_desktop() then leave_desktop() end
+    end, { non_consuming = true })
     hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("scratch"))
     hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratch", silent = true }))
 
