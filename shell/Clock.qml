@@ -8,11 +8,10 @@ BarButton {
     property var bar
     icon: false
     padding: 8
+    color: Theme.fg
     text: Qt.formatDateTime(clock.date, "dddd ") + ClockFormat.ordinalDay(clock.date.getDate())
         + Qt.formatDateTime(clock.date, ", HH:mm")
     onClicked: bar.togglePanel("calendar")
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
-
-    Calendar { anchorItem: root; open: bar.panelOpen("calendar") }
 }

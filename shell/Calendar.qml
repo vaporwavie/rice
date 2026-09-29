@@ -1,90 +1,178 @@
 import QtQuick
-import Quickshell
 import qs
 
 Panel {
     id: root
     name: "calendar"
-    contentWidth: 7 * 36
+    contentWidth: 700
+    // A native popup grab needs the input serial from a click on the bar.
+    grabFocus: Panels.fromPointer
+    grab: !grabFocus
+    onVisibleChanged: if (!visible && open) root.close()
 
     property date shown: new Date()
-    readonly property date today: clock.date
-    onOpenChanged: if (open) shown = new Date()
+    property string selected: ""
+    readonly property date today: new Date(Todoist.now)
+    readonly property var groups: Todoist.agenda(selected)
 
-    SystemClock { id: clock; precision: SystemClock.Minutes }
+    onOpenChanged: if (open) { reset(); Todoist.refresh() }
+    onBackingWindowVisibleChanged: if (backingWindowVisible) Qt.callLater(() => body.forceActiveFocus())
 
+    function reset() { shown = new Date(); selected = "" }
     function shift(months) {
         shown = new Date(shown.getFullYear(), shown.getMonth() + months, 1)
+        selected = ""
     }
+    function selectDate(date) { selected = Todoist.dayKey(date) }
+    function dateFor(day) { return new Date(shown.getFullYear(), shown.getMonth(), day) }
     function cells() {
         var first = new Date(shown.getFullYear(), shown.getMonth(), 1)
         var lead = (first.getDay() + 6) % 7
         var days = new Date(shown.getFullYear(), shown.getMonth() + 1, 0).getDate()
         var out = []
-        for (var i = 0; i < lead; i++) out.push(0)
-        for (var d = 1; d <= days; d++) out.push(d)
-        while (out.length % 7 !== 0) out.push(0)
+        for (var i = 0; i < 42; i++) out.push(i >= lead && i < lead + days ? i - lead + 1 : 0)
         return out
-    }
-    function isToday(d) {
-        return d === today.getDate() && shown.getMonth() === today.getMonth() && shown.getFullYear() === today.getFullYear()
     }
 
     Column {
+        id: body
         width: root.contentWidth
-        spacing: 4
+        spacing: 10
+        focus: true
+
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Escape) root.close()
+            else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) root.shift(-1)
+            else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) root.shift(1)
+            else if (event.key === Qt.Key_T) root.reset()
+            else if (event.key === Qt.Key_R) Todoist.refresh()
+            else return
+            event.accepted = true
+        }
 
         Item {
             width: parent.width
             height: Theme.rowHeight
             Label {
-                anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                text: "󰅁"; icon: true
-                MouseArea { anchors.fill: parent; anchors.margins: -6; onClicked: root.shift(-1) }
+                anchors { left: parent.left; leftMargin: 6; verticalCenter: parent.verticalCenter }
+                text: "Todoist"
+                font.bold: true
             }
-            Label {
-                anchors.centerIn: parent
-                text: Qt.formatDate(root.shown, "MMMM yyyy")
-            }
-            Label {
-                anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                text: "󰅂"; icon: true
-                MouseArea { anchors.fill: parent; anchors.margins: -6; onClicked: root.shift(1) }
+            Row {
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                spacing: 8
+                BarButton {
+                    text: "󰑐"
+                    tip: "Refresh (R)"
+                    enabled: !Todoist.loading
+                    color: enabled ? Theme.fgDim : Theme.muted
+                    onClicked: Todoist.refresh()
+                }
+                BarButton { text: "󰅖"; tip: "Close (Esc)"; onClicked: root.close() }
             }
         }
 
-        Grid {
-            columns: 7
-            Repeater {
-                model: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        Rectangle { width: parent.width; height: 1; color: Theme.border }
+
+        Row {
+            width: parent.width
+            spacing: 16
+
+            Column {
+                width: 252
+                spacing: 6
                 Item {
-                    required property string modelData
-                    width: 36; height: 24
-                    Label { anchors.centerIn: parent; text: modelData; dim: true }
+                    width: parent.width
+                    height: Theme.rowHeight
+                    BarButton {
+                        anchors.left: parent.left
+                        text: "󰅁"; tip: "Previous month (H)"
+                        onClicked: root.shift(-1)
+                    }
+                    Label { anchors.centerIn: parent; text: Qt.formatDate(root.shown, "MMMM yyyy") }
+                    BarButton {
+                        anchors.right: parent.right
+                        text: "󰅂"; tip: "Next month (L)"
+                        onClicked: root.shift(1)
+                    }
                 }
+                Grid {
+                    columns: 7
+                    Repeater {
+                        model: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+                        Item {
+                            required property string modelData
+                            width: 36; height: 24
+                            Label { anchors.centerIn: parent; text: modelData; color: Theme.fgDim }
+                        }
+                    }
+                }
+                Grid {
+                    columns: 7
+                    Repeater {
+                        model: root.cells()
+                        Rectangle {
+                            id: cell
+                            required property int modelData
+                            readonly property string key: modelData ? Todoist.dayKey(root.dateFor(modelData)) : ""
+                            readonly property bool isToday: key === Todoist.dayKey(root.today)
+                            readonly property bool chosen: key !== "" && key === root.selected
+                            width: 36; height: 32
+                            color: chosen ? Theme.bgElev : dayArea.containsMouse ? Theme.bgAlt : "transparent"
+                            border.width: chosen ? 1 : 0
+                            border.color: Theme.accent
+                            Label {
+                                anchors.centerIn: parent
+                                text: cell.modelData ? String(cell.modelData) : ""
+                                color: cell.isToday ? Theme.accent : Theme.fg
+                                font.bold: cell.isToday
+                            }
+                            Rectangle {
+                                anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 3 }
+                                width: 4; height: 4; radius: 2
+                                color: Theme.accent
+                                visible: (Todoist.dayCounts[cell.key] || 0) > 0
+                            }
+                            MouseArea {
+                                id: dayArea
+                                anchors.fill: parent
+                                enabled: cell.modelData > 0
+                                hoverEnabled: true
+                                onClicked: root.selectDate(root.dateFor(cell.modelData))
+                            }
+                        }
+                    }
+                }
+                PanelRow {
+                    icon: "󰃭"; text: "Today / agenda"; trailing: "T"
+                    onClicked: root.reset()
+                }
+            }
+
+            Rectangle { width: 1; height: 334; color: Theme.border }
+
+            TodoistAgenda {
+                width: 415
+                height: 334
+                groups: root.groups
+                filtered: root.selected !== ""
             }
         }
 
-        Grid {
-            columns: 7
-            Repeater {
-                model: root.cells()
-                Item {
-                    required property int modelData
-                    width: 36; height: 28
-                    Label {
-                        anchors.centerIn: parent
-                        text: modelData === 0 ? "" : String(modelData)
-                        color: root.isToday(modelData) ? Theme.accent : Theme.fg
-                        font.bold: root.isToday(modelData)
-                    }
-                    Rectangle {
-                        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2 }
-                        width: 18; height: 2
-                        color: root.isToday(modelData) ? Theme.accent : "transparent"
-                    }
-                }
-            }
+        Label {
+            width: parent.width
+            visible: Todoist.error !== "" || Todoist.actionError !== ""
+            text: (Todoist.actionError || Todoist.error).split("\n")[0]
+                + (Todoist.error && Todoist.loaded ? " · Showing last update" : "")
+            textFormat: Text.PlainText
+            wrapMode: Text.Wrap
+            maximumLineCount: 3
+            color: Theme.red
+        }
+        Rectangle { width: parent.width; height: 1; color: Theme.border }
+        PanelRow {
+            icon: "󰖟"; text: "Open Todoist"; trailing: "add / edit"
+            onClicked: { root.close(); Todoist.openApp() }
         }
     }
 }

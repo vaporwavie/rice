@@ -43,9 +43,12 @@ PanelWindow {
         anchors.centerIn: parent
         Clock { bar: bar }
         opacity: bar.arrival
+        Clock { bar: bar }
+        TodoistButton { bar: bar }
         transform: Translate { y: (1 - bar.arrival) * -6 }
         NextEvent { bar: bar }
     }
+    Calendar { anchorItem: center; open: bar.panelOpen("calendar") }
 
     EventsPanel { anchorItem: center; open: bar.panelOpen("events") }
 

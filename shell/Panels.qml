@@ -8,6 +8,7 @@ Singleton {
 
     property string open: ""
     property string screenName: ""
+    property bool fromPointer: false
 
     function toggle(name, screen) {
         if (open === name) {
@@ -15,6 +16,7 @@ Singleton {
             return
         }
         screenName = screen || (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")
+        fromPointer = !!screen
         open = name
     }
 
