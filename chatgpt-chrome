@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+// Strips the ChatGPT desktop titlebar chrome that tiling makes useless: the
+// Chromium min/max/close overlay and the File/Edit/View/Help web menubar.
+// Re-run after every rpm update; exits non-zero when an anchor stops matching.
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const ASAR = '/usr/lib/chatgpt/resources/app.asar';
+const MARKER = '/*chatgpt-chrome*/';
+const BLOCK = 4 * 1024 * 1024;
+
+const patches = [
+  {
+    file: /^\.vite\/build\/main-[\w-]+\.js$/,
+    edits: [
+      { name: 'window overlay option', find: /titleBarOverlay:[\w$]+\([\w$]*\)/g, replace: 'titleBarOverlay:!1', min: 2 },
+      { name: 'overlay updates', find: /[\w$]+\.setTitleBarOverlay\(/g, replace: '(()=>{})(', min: 2 },
+    ],
+  },
+  {
+    file: /^webview\/assets\/app-initial-[\w-]+\.js$/,
+    edits: [
+      { name: 'web menubar', find: /`flex items-center gap-0\.5 ps-1 pe-2`,"aria-label"/g, replace: '`hidden`,"aria-label"', min: 1 },
+    ],
+  },
+];
+
+const fail = (message) => {
+  console.error(`chatgpt-chrome: ${message}`);
+  process.exit(1);
+};
+
+const readArchive = (path) => {
+  const buf = readFileSync(path);
+  const headerSize = buf.readUInt32LE(4);
+  const headerLength = buf.readUInt32LE(12);
+  const header = JSON.parse(buf.subarray(16, 16 + headerLength).toString('utf8'));
+  return { buf, header, dataStart: 8 + headerSize };
+};
+
+const walk = (node, prefix = '', out = []) => {
+  for (const [name, entry] of Object.entries(node.files || {})) {
+    const path = prefix ? `${prefix}/${name}` : name;
+    if (entry.files) {
+      walk(entry, path, out);
+      continue;
+    }
+    if (entry.unpacked || entry.link || entry.offset === undefined) continue;
+    out.push({ path, entry });
+  }
+  return out;
+};
+
+const integrity = (content) => {
+  const blocks = [];
+  for (let i = 0; i < content.length; i += BLOCK) {
+    blocks.push(createHash('sha256').update(content.subarray(i, i + BLOCK)).digest('hex'));
+  }
+  return { algorithm: 'SHA256', hash: createHash('sha256').update(content).digest('hex'), blockSize: BLOCK, blocks };
+};
+
+const pickleHeader = (header) => {
+  const json = Buffer.from(JSON.stringify(header), 'utf8');
+  const padded = Math.ceil(json.length / 4) * 4;
+  const body = Buffer.alloc(8 + padded);
+  body.writeUInt32LE(4 + padded, 0);
+  body.writeUInt32LE(json.length, 4);
+  json.copy(body, 8);
+  const prefix = Buffer.alloc(8);
+  prefix.writeUInt32LE(4, 0);
+  prefix.writeUInt32LE(body.length, 4);
+  return Buffer.concat([prefix, body]);
+};
+
+const { buf, header, dataStart } = readArchive(ASAR);
+const files = walk(header).sort((a, b) => Number(a.entry.offset) - Number(b.entry.offset));
+const contentOf = ({ entry }) => {
+  const start = dataStart + Number(entry.offset);
+  return buf.subarray(start, start + entry.size);
+};
+
+const replaced = new Map();
+for (const { file, edits } of patches) {
+  const matches = files.filter(({ path }) => file.test(path));
+  if (matches.length !== 1) fail(`expected one file matching ${file}, found ${matches.length}`);
+  const [target] = matches;
+  let source = contentOf(target).toString('utf8');
+  if (source.includes(MARKER)) {
+    console.log(`chatgpt-chrome: ${target.path} already patched`);
+    continue;
+  }
+  for (const { name, find, replace, min } of edits) {
+    const count = source.match(find)?.length ?? 0;
+    if (count < min) fail(`${name}: ${count} matches in ${target.path}, expected at least ${min}`);
+    source = source.replace(find, replace);
+    console.log(`chatgpt-chrome: ${name} (${count} in ${target.path})`);
+  }
+  replaced.set(target.path, Buffer.from(`${source}\n${MARKER}`, 'utf8'));
+}
+
+if (replaced.size === 0) process.exit(0);
+
+let offset = 0;
+const chunks = [];
+const moved = new Map();
+for (const file of files) {
+  const oldOffset = file.entry.offset;
+  if (!replaced.has(file.path) && moved.has(oldOffset)) {
+    file.entry.offset = moved.get(oldOffset);
+    continue;
+  }
+  const content = replaced.get(file.path) ?? contentOf(file);
+  if (!replaced.has(file.path)) moved.set(oldOffset, String(offset));
+  file.entry.offset = String(offset);
+  file.entry.size = content.length;
+  if (replaced.has(file.path)) file.entry.integrity = integrity(content);
+  chunks.push(content);
+  offset += content.length;
+}
+
+const version = readFileSync('/usr/lib/chatgpt/resources/owl-app.ini', 'utf8').match(/AppVersion=(.+)/)?.[1] ?? 'unknown';
+const stateDir = join(process.env.HOME, '.local/share/chatgpt-chrome');
+const backup = join(stateDir, `app.asar.${version}.orig`);
+const staged = join(process.env.XDG_RUNTIME_DIR || '/tmp', 'chatgpt-chrome.asar');
+execFileSync('mkdir', ['-p', stateDir]);
+if (!existsSync(backup)) writeFileSync(backup, buf);
+writeFileSync(staged, Buffer.concat([pickleHeader(header), ...chunks]));
+console.log(`chatgpt-chrome: staged ${staged}, original kept at ${backup}`);
+
+if (process.argv.includes('--stage-only')) process.exit(0);
+execFileSync('sudo', ['install', '-m', '644', staged, ASAR], { stdio: 'inherit' });
+console.log('chatgpt-chrome: installed, restart ChatGPT');
