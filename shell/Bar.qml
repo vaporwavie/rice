@@ -34,6 +34,7 @@ PanelWindow {
         opacity: bar.arrival
         transform: Translate { y: (1 - bar.arrival) * -6 }
         Workspaces { bar: bar }
+        GroupTabs { }
         ActiveWindow { }
     }
 

@@ -29,6 +29,21 @@ return function(ctx)
     hl.bind(mod .. " + C", hl.dsp.window.center())
     hl.bind(mod .. " + T", hl.dsp.layout("togglesplit"))
     hl.bind(mod .. " + G", hl.dsp.group.toggle())
+    hl.bind(mod .. " + SHIFT + G", hl.dsp.submap("join-group"))
+    hl.define_submap("join-group", function()
+        for key, direction in pairs({ L = "left", R = "right", U = "up", D = "down" }) do
+            hl.bind(key, function()
+                hl.dispatch(hl.dsp.submap("reset"))
+                hl.dispatch(hl.dsp.window.move({ into_group = direction }))
+            end, { ignore_mods = true })
+        end
+        -- Release binds consume modifier presses before catchall.
+        for _, key in ipairs({ "Super_L", "Super_R", "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R" }) do
+            hl.bind(key, hl.dsp.no_op(), { ignore_mods = true, release = true })
+        end
+        hl.bind("Escape", hl.dsp.submap("reset"), { ignore_mods = true })
+        hl.bind("catchall", hl.dsp.submap("reset"), { ignore_mods = true })
+    end)
     hl.bind(mod .. " + bracketright", hl.dsp.group.next())
     hl.bind(mod .. " + bracketleft", hl.dsp.group.prev())
     hl.bind("ALT + Tab", function()

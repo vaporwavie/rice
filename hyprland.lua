@@ -89,7 +89,22 @@ hl.config({
             border_active = active_border,
             border_inactive = inactive_border,
         },
-        groupbar = { enabled = false },
+        groupbar = {
+            enabled = true,
+            render_titles = false,
+            gradients = false,
+            keep_upper_gap = false,
+            indicator_height = 1,
+            gaps_in = 10,
+            gaps_out = 2,
+            rounding = 0,
+            col = {
+                active = group_active,
+                inactive = inactive_border,
+                locked_active = group_active,
+                locked_inactive = inactive_border,
+            },
+        },
     },
     misc = {
         disable_hyprland_logo = true,
