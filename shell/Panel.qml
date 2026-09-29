@@ -50,11 +50,36 @@ PopupWindow {
         }
     }
 
+    // Panels drop out of the bar the way the landing reveals a section: fade in, settle a few px.
+    property real shown: 0
+    onOpenChanged: if (open) { reveal.restart() } else { reveal.stop(); shown = 0 }
+    NumberAnimation {
+        id: reveal
+        target: root
+        property: "shown"
+        from: 0
+        to: 1
+        duration: Theme.enter
+        easing.type: Theme.easing
+    }
+
     Rectangle {
-        anchors.fill: parent
-        color: Theme.bg
-        border.color: Theme.accent
+        width: parent.width
+        height: parent.height
+        y: (1 - root.shown) * -8
+        opacity: root.shown
+        color: Theme.bgAlt
+        border.color: Theme.lineStrong
         border.width: Theme.panelBorder
+
+        Rectangle {
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: Theme.panelBorder }
+            height: Math.min(parent.height * 0.6, 160)
+            gradient: Gradient {
+                GradientStop { position: 0; color: Theme.glow }
+                GradientStop { position: 1; color: "transparent" }
+            }
+        }
 
         Item {
             id: holder

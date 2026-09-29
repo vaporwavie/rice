@@ -3,10 +3,9 @@ import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs
 
-RowLayout {
+Item {
     id: root
     property var bar
-    spacing: 0
 
     function list() {
         var out = []
@@ -16,31 +15,54 @@ RowLayout {
         return out
     }
 
-    Repeater {
-        model: root.list()
-        Item {
-            required property var modelData
-            readonly property bool focused: modelData.focused
-            implicitWidth: ws.implicitWidth + 12
-            implicitHeight: Theme.barHeight
+    readonly property Item current: {
+        for (var i = 0; i < tabs.count; i++) {
+            var item = tabs.itemAt(i)
+            if (item && item.focused) return item
+        }
+        return null
+    }
 
-            Label {
-                id: ws
-                anchors.centerIn: parent
-                text: modelData.name
-                color: modelData.urgent ? Theme.red : (focused || hover.containsMouse ? Theme.fg : Theme.muted)
-            }
-            Rectangle {
-                anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
-                height: 2
-                color: focused ? Theme.accent : "transparent"
-            }
-            MouseArea {
-                id: hover
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: Hyprland.dispatch("hl.dsp.focus({ workspace = " + modelData.id + " })")
+    implicitWidth: row.implicitWidth
+    implicitHeight: Theme.barHeight
+
+    Row {
+        id: row
+        height: parent.height
+        Repeater {
+            id: tabs
+            model: root.list()
+            Item {
+                required property var modelData
+                readonly property bool focused: modelData.focused
+                width: ws.implicitWidth + 12
+                height: Theme.barHeight
+
+                Label {
+                    id: ws
+                    anchors.centerIn: parent
+                    text: modelData.name
+                    color: modelData.urgent ? Theme.red : (parent.focused ? Theme.fg : hover.containsMouse ? Theme.fgDim : Theme.muted)
+                }
+                MouseArea {
+                    id: hover
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: Hyprland.dispatch("hl.dsp.focus({ workspace = " + modelData.id + " })")
+                }
             }
         }
+    }
+
+    // One hairline under the focused workspace, gliding between them on the landing's curve.
+    Rectangle {
+        anchors.bottom: parent.bottom
+        height: 2
+        color: Theme.accent
+        visible: root.current !== null
+        x: root.current ? root.current.x : 0
+        width: root.current ? root.current.width : 0
+        Behavior on x { NumberAnimation { duration: Theme.enter; easing.type: Theme.easing } }
+        Behavior on width { NumberAnimation { duration: Theme.enter; easing.type: Theme.easing } }
     }
 }

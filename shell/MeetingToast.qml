@@ -24,8 +24,8 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.bg
-        border.color: Theme.accent
+        color: Theme.bgAlt
+        border.color: Theme.lineStrong
         border.width: Theme.panelBorder
 
         MouseArea {
@@ -77,14 +77,16 @@ PanelWindow {
 
                 Rectangle {
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                    width: action.implicitWidth + 24
+                    width: action.implicitWidth + 32
                     height: Theme.rowHeight
+                    radius: height / 2
                     color: actionArea.containsMouse ? Theme.accentAlt : Theme.accent
+                    Behavior on color { ColorAnimation { duration: Theme.quick; easing.type: Theme.easing } }
 
                     Label {
                         id: action
                         anchors.centerIn: parent
-                        text: root.event && root.event.join ? root.event.join : "Open Calendar"
+                        text: (root.event && root.event.join ? root.event.join : "Open Calendar") + "  →"
                         textFormat: Text.PlainText
                         color: Theme.bg
                     }

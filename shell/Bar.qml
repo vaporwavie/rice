@@ -18,9 +18,21 @@ PanelWindow {
     WlrLayershell.namespace: "hypr-bar"
     WlrLayershell.keyboardFocus: Panels.open !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
+    // The bar settles in like the landing nav: a short rise and fade on the site's curve.
+    property real arrival: 0
+    NumberAnimation on arrival { from: 0; to: 1; duration: Theme.hero; easing.type: Theme.easing }
+
+    Rectangle {
+        anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
+        height: 1
+        color: Theme.border
+    }
+
     RowLayout {
-        anchors { left: parent.left; top: parent.top; bottom: parent.bottom; leftMargin: 4 }
+        anchors { left: parent.left; top: parent.top; bottom: parent.bottom; leftMargin: 6 }
         spacing: 0
+        opacity: bar.arrival
+        transform: Translate { y: (1 - bar.arrival) * -6 }
         Workspaces { bar: bar }
         ActiveWindow { }
     }
@@ -29,13 +41,15 @@ PanelWindow {
         id: center
         anchors.centerIn: parent
         Clock { bar: bar }
+        opacity: bar.arrival
+        transform: Translate { y: (1 - bar.arrival) * -6 }
         NextEvent { bar: bar }
     }
 
     EventsPanel { anchorItem: center; open: bar.panelOpen("events") }
 
     RowLayout {
-        anchors { right: parent.right; top: parent.top; bottom: parent.bottom; rightMargin: 8 }
+        anchors { right: parent.right; top: parent.top; bottom: parent.bottom; rightMargin: 10 }
         spacing: 0
         Cpu { }
         Memory { }

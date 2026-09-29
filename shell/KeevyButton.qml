@@ -6,7 +6,7 @@ BarButton {
     property var bar
     text: "󰌢"
     tip: "Keevy"
-    color: bar.panelOpen("keevy") || Keevy.busy ? Theme.accent : Theme.fg
+    color: bar.panelOpen("keevy") || Keevy.busy ? Theme.accent : Theme.fgDim
     onClicked: bar.togglePanel("keevy")
 
     KeevyPanel {

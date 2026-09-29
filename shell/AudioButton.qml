@@ -12,7 +12,7 @@ BarButton {
     readonly property bool headphones: ready && /headphone|headset/i.test((sink.description || "") + (sink.name || ""))
 
     text: !ready || muted ? "󰝟" : headphones ? "󰋋" : volume < 0.34 ? "󰕿" : volume < 0.67 ? "󰖀" : "󰕾"
-    color: muted ? Theme.muted : Theme.fg
+    color: muted ? Theme.muted : Theme.fgDim
     tip: ready ? Math.round(volume * 100) + "%  " + (sink.description || sink.name) : "no sink"
 
     onClicked: mouse => {

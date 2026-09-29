@@ -6,9 +6,10 @@ Item {
 
     property string text: ""
     property bool icon: true
-    property color color: Theme.fg
-    property int padding: 7
+    property color color: Theme.fgDim
+    property int padding: 8
     property string tip: ""
+    readonly property bool hovered: area.containsMouse
     signal clicked(var mouse)
     signal wheel(var wheel)
 
@@ -20,7 +21,7 @@ Item {
         anchors.centerIn: parent
         text: root.text
         icon: root.icon
-        color: root.color
+        color: root.hovered && root.enabled && root.color === Theme.fgDim ? Theme.fg : root.color
     }
 
     MouseArea {
