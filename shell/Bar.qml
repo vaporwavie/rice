@@ -55,9 +55,9 @@ PanelWindow {
     RowLayout {
         anchors { right: parent.right; top: parent.top; bottom: parent.bottom; rightMargin: 10 }
         spacing: 0
-        Cpu { }
-        Memory { }
-        NetworkButton { bar: bar }
+        opacity: bar.arrival
+        transform: Translate { y: (1 - bar.arrival) * -6 }
+        ActivityButton { bar: bar }
         BluetoothButton { bar: bar }
         KeevyButton { bar: bar }
         DisplayButton { bar: bar }
