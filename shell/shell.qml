@@ -39,7 +39,12 @@ ShellRoot {
 
     IpcHandler {
         target: "nina"
-        function state(): string { return (Nina.connected ? "connected " : "disconnected ") + Nina.state }
+        function state(): string {
+            return JSON.stringify({ connected: Nina.connected, state: Nina.state, message: Nina.message,
+                levels: Nina.levels.length, model: Nina.model, language: Nina.language, hotkey: Nina.hotkeyLabel,
+                history: Nina.history.length, latest: Nina.latest ? Nina.latest.id : -1, copied: Nina.copiedId })
+        }
+        function launch(): void { Nina.openSettings() }
     }
 
     IpcHandler {
@@ -53,11 +58,6 @@ ShellRoot {
         function dismiss(): void { NotionCalendar.dismiss() }
     }
 
-    IpcHandler {
-        target: "display"
-        function brightness(delta: int): void { Ddc.setBrightness(Ddc.brightness + delta) }
-        function set(value: int): void { Ddc.setBrightness(value) }
-    }
     IpcHandler {
         target: "todoist"
         function state(): string {
@@ -100,4 +100,9 @@ ShellRoot {
         function refresh(): void { Overseer.refresh() }
     }
 
+    IpcHandler {
+        target: "display"
+        function brightness(delta: int): void { Ddc.setBrightness(Ddc.brightness + delta) }
+        function set(value: int): void { Ddc.setBrightness(value) }
+    }
 }

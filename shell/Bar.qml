@@ -41,15 +41,14 @@ PanelWindow {
     Row {
         id: center
         anchors.centerIn: parent
-        Clock { bar: bar }
         opacity: bar.arrival
+        transform: Translate { y: (1 - bar.arrival) * -6 }
         Clock { bar: bar }
         TodoistButton { bar: bar }
-        transform: Translate { y: (1 - bar.arrival) * -6 }
         NextEvent { bar: bar }
     }
-    Calendar { anchorItem: center; open: bar.panelOpen("calendar") }
 
+    Calendar { anchorItem: center; open: bar.panelOpen("calendar") }
     EventsPanel { anchorItem: center; open: bar.panelOpen("events") }
 
     RowLayout {
@@ -61,6 +60,7 @@ PanelWindow {
         BluetoothButton { bar: bar }
         KeevyButton { bar: bar }
         DisplayButton { bar: bar }
+        NinaButton { bar: bar }
         AudioButton { bar: bar }
         PowerButton { bar: bar }
         Tray { bar: bar }

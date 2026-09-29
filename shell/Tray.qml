@@ -15,6 +15,8 @@ RowLayout {
             id: entry
             required property var modelData
             readonly property string key: "tray:" + modelData.id
+            // Nina has its own bar button.
+            visible: modelData.id !== "nina"
             implicitWidth: 26
             implicitHeight: Theme.barHeight
 
