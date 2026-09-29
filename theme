@@ -96,7 +96,19 @@ for v in 3.0 4.0; do
         -e "s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=$ICON_THEME/" \
         -e "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$GTK_PREFER_DARK/" "$ini"
 done
-if has plasma-apply-colorscheme && has kreadconfig6 &&
-    [[ $(kreadconfig6 --file kdeglobals --group General --key ColorScheme) != "$KDE_SCHEME" ]]; then
-    plasma-apply-colorscheme "$KDE_SCHEME" >/dev/null 2>&1 || true
+scheme_file="${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/$KDE_SCHEME.colors"
+if has kreadconfig6 && [[ $(kreadconfig6 --file kdeglobals --group General --key ColorScheme) != "$KDE_SCHEME" ]]; then
+    if has plasma-apply-colorscheme; then
+        plasma-apply-colorscheme "$KDE_SCHEME" >/dev/null 2>&1 || true
+    elif has kwriteconfig6 && [[ -f $scheme_file ]]; then
+        # Outside Plasma there is no applier, so copy the scheme's groups into kdeglobals the way it would.
+        awk -F= '/^\[/ { gsub(/^\[|\]$/, ""); group = $0; next } /=/ && group != "General" { print group "\t" $1 "\t" substr($0, length($1) + 2) }' "$scheme_file" |
+            while IFS=$'\t' read -r group key value; do
+                args=()
+                IFS=']' read -ra parts <<< "${group//\]\[/]}"
+                for part in "${parts[@]}"; do args+=(--group "$part"); done
+                kwriteconfig6 --file kdeglobals "${args[@]}" --key "$key" "$value"
+            done
+        kwriteconfig6 --file kdeglobals --group General --key ColorScheme "$KDE_SCHEME"
+    fi
 fi

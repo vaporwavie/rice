@@ -9,6 +9,6 @@ Type=dbus
 BusName=org.freedesktop.Notifications
 ExecStart=/usr/bin/dunst -conf %h/.config/hypr/generated/dunstrc
 ExecReload=/usr/bin/dunstctl reload
-Restart=on-failure
+Restart=always
 RestartSec=1
 Slice=session.slice
