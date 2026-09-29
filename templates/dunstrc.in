@@ -2,23 +2,23 @@
 monitor = 0
 follow = none
 origin = top-right
-offset = (10, 10)
-width = (280, 380)
+offset = (14, 14)
+width = (300, 400)
 height = (0, 240)
-gap_size = 6
+gap_size = 8
 corner_radius = 0
-frame_width = 2
-frame_color = "#${ACCENT}"
-separator_color = frame
-padding = 10
-horizontal_padding = 12
-text_icon_padding = 10
-font = Geist Mono 11
-format = "<b>%s</b>\n%b"
+frame_width = 1
+frame_color = "#${LINE_STRONG}"
+separator_color = "#${BORDER}"
+padding = 14
+horizontal_padding = 16
+text_icon_padding = 14
+font = IBM Plex Sans 11
+format = "<span font_weight='500'>%s</span>\n<span foreground='#${FG_DIM}'>%b</span>"
 markup = full
 alignment = left
 vertical_alignment = center
-line_height = 1
+line_height = 3
 word_wrap = yes
 ellipsize = end
 show_age_threshold = 60
@@ -28,7 +28,7 @@ max_icon_size = 32
 icon_theme = ${ICON_THEME}, breeze, hicolor
 enable_recursive_icon_lookup = true
 progress_bar = true
-progress_bar_height = 6
+progress_bar_height = 2
 progress_bar_corner_radius = 0
 progress_bar_frame_width = 0
 highlight = "#${ACCENT}"
@@ -39,18 +39,18 @@ mouse_right_click = close_current
 layer = overlay
 
 [urgency_low]
-background = "#${BG}"
+background = "#${BG_ALT}"
 foreground = "#${MUTED}"
-frame_color = "#${MUTED}"
+frame_color = "#${BORDER}"
 timeout = 4
 
 [urgency_normal]
-background = "#${BG}"
+background = "#${BG_ALT}"
 foreground = "#${FG}"
 timeout = 6
 
 [urgency_critical]
-background = "#${BG}"
+background = "#${BG_ALT}"
 foreground = "#${FG}"
 frame_color = "#${RED}"
 timeout = 0

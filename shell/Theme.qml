@@ -7,30 +7,38 @@ Singleton {
     id: root
 
     property var palette: ({})
-    readonly property string mode: palette.mode || "night"
-    readonly property color bg: palette.bg || "#141414"
-    readonly property color bgAlt: palette.bgAlt || "#1c1c1c"
-    readonly property color bgElev: palette.bgElev || "#262626"
-    readonly property color border: palette.border || "#2c2c2c"
-    readonly property color fg: palette.fg || "#e1e1e1"
-    readonly property color fgDim: palette.fgDim || "#8c8c8c"
-    readonly property color muted: palette.muted || "#6c6c6c"
-    readonly property color accent: palette.accent || "#7aa2f7"
-    readonly property color accentAlt: palette.accentAlt || "#bb9af7"
-    readonly property color red: palette.red || "#f7768e"
-    readonly property color green: palette.green || "#9ece6a"
-    readonly property color yellow: palette.yellow || "#e0af68"
-    readonly property color cyan: palette.cyan || "#7dcfff"
+    readonly property string mode: palette.mode || "dark"
+    readonly property color bg: palette.bg || "#000000"
+    readonly property color bgAlt: palette.bgAlt || "#0b0b0c"
+    readonly property color bgElev: palette.bgElev || "#151517"
+    readonly property color border: palette.border || "#171717"
+    readonly property color lineStrong: palette.lineStrong || "#292929"
+    readonly property color fg: palette.fg || "#e8e8e5"
+    readonly property color fgDim: palette.fgDim || "#8c8c89"
+    readonly property color muted: palette.muted || "#57574f"
+    readonly property color accent: palette.accent || "#f4f2ec"
+    readonly property color accentAlt: palette.accentAlt || "#e8e8e5"
+    readonly property color red: palette.red || "#d8826f"
+    readonly property color green: palette.green || "#a3b18a"
+    readonly property color yellow: palette.yellow || "#d6b370"
+    readonly property color cyan: palette.cyan || "#9fb7bd"
+    readonly property color glow: Qt.rgba(fg.r, fg.g, fg.b, mode === "light" ? 0.04 : 0.05)
 
     readonly property string font: "Geist Mono"
     readonly property string iconFont: "JetBrainsMono Nerd Font"
     readonly property int fontSize: 14
     readonly property int iconSize: 15
-    readonly property int barHeight: 30
-    readonly property int panelPadding: 10
-    readonly property int panelBorder: 2
+    readonly property int barHeight: 36
+    readonly property int panelPadding: 12
+    readonly property int panelBorder: 1
     readonly property int panelWidth: 320
-    readonly property int rowHeight: 28
+    readonly property int rowHeight: 30
+
+    // The landing's single curve (ease-out-expo) and its paces: hovers, entrances, the hero.
+    readonly property int easing: Easing.OutExpo
+    readonly property int quick: 300
+    readonly property int enter: 550
+    readonly property int hero: 1000
 
     function reload() { colors.reload() }
 

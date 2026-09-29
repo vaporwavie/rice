@@ -66,6 +66,8 @@ if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
     if changed_has colors.lua; then hyprctl reload >/dev/null; fi
     if changed_has shell-colors.json; then qs -p "$here/shell" ipc call theme reload >/dev/null 2>&1 || true; fi
     if changed_has dunstrc && has dunstctl; then dunstctl reload >/dev/null 2>&1 || true; fi
+    # Kitty's auto themes follow the portal, which can lag the flip, so reload them directly.
+    if [[ $prev != "$mode" ]]; then pkill -USR1 -x kitty 2>/dev/null || true; fi
 fi
 
 wall="$here/$WALLPAPER"

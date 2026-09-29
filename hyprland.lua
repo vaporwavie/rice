@@ -12,9 +12,9 @@ local function rgba(hex, alpha) return "rgba(" .. hex .. alpha .. ")" end
 local ok, colors = pcall(dofile, cfg .. "/generated/colors.lua")
 if not ok then
     colors = {
-        bg = "141414", bg_alt = "1c1c1c", bg_elev = "262626", border = "2c2c2c",
-        fg = "e1e1e1", fg_dim = "8c8c8c", muted = "6c6c6c",
-        accent = "7aa2f7", accent_alt = "bb9af7", red = "f7768e", green = "9ece6a", yellow = "e0af68", cyan = "7dcfff",
+        mode = "dark", bg = "000000", bg_alt = "0b0b0c", bg_elev = "151517", border = "171717", line_strong = "292929",
+        fg = "e8e8e5", fg_dim = "8c8c89", muted = "57574f",
+        accent = "f4f2ec", accent_alt = "e8e8e5", red = "d8826f", green = "a3b18a", yellow = "d6b370", cyan = "9fb7bd",
     }
 end
 
@@ -56,21 +56,23 @@ end
 ---- LOOK AND FEEL ----
 -----------------------
 
--- Flat: square corners, solid 2px borders, no blur, no shadows, a hair of transparency.
-local active_border = rgb(colors.accent)
-local inactive_border = rgba(colors.muted, "aa")
+-- Altura: ink ground, hairline edges lit from above like the landing's top glow, no blur or shadow.
+local lit = colors.mode == "light" and "0b0b0c" or "f4f2ec"
+local active_border = { colors = { rgba(lit, "b3"), rgba(lit, "2e") }, angle = 90 }
+local inactive_border = rgb(colors.line_strong or colors.border)
+local group_active = rgba(lit, "b3")
 
 hl.config({
     general = {
-        gaps_in = 5,
-        gaps_out = 10,
-        border_size = 2,
+        gaps_in = 4,
+        gaps_out = 8,
+        border_size = 1,
         col = {
             active_border = active_border,
             inactive_border = inactive_border,
         },
         resize_on_border = true,
-        extend_border_grab_area = 10,
+        extend_border_grab_area = 12,
         allow_tearing = false,
         layout = "dwindle",
         snap = { enabled = true },
@@ -79,7 +81,7 @@ hl.config({
         rounding = 0,
         shadow = { enabled = false },
         blur = { enabled = false },
-        dim_special = 0.3,
+        dim_special = 0.5,
     },
     animations = { enabled = true },
     group = {
@@ -94,7 +96,7 @@ hl.config({
         disable_splash_rendering = true,
         disable_scale_notification = true,
         background_color = rgb(colors.bg),
-        font_family = "Geist Mono",
+        font_family = "IBM Plex Mono",
         animate_manual_resizes = false,
         animate_mouse_windowdragging = false,
         focus_on_activate = true,
@@ -107,29 +109,30 @@ hl.config({
     },
 })
 
--- Short, decelerating curves.
-hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
-hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
-hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
+-- One curve, the landing's ease-out-expo: things arrive fast and settle long, never bounce.
+-- Entrances rise a few percent while fading in, the desktop version of the site's fadeUp.
+hl.curve("expo", { type = "bezier", points = { { 0.16, 1 }, { 0.3, 1 } } })
+hl.curve("exit", { type = "bezier", points = { { 0.7, 0 }, { 0.84, 0 } } })
 
-hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
-hl.animation({ leaf = "border", enabled = true, speed = 3, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windows", enabled = true, speed = 2.5, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 2.5, bezier = "easeOutQuint", style = "popin 87%" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.2, bezier = "linear", style = "popin 87%" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 2.5, bezier = "easeOutQuint" })
-hl.animation({ leaf = "fade", enabled = true, speed = 2, bezier = "quick" })
-hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.5, bezier = "quick" })
-hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.2, bezier = "linear" })
+hl.animation({ leaf = "global", enabled = true, speed = 6, bezier = "expo" })
+hl.animation({ leaf = "border", enabled = true, speed = 6, bezier = "expo" })
+hl.animation({ leaf = "windows", enabled = true, speed = 5, bezier = "expo" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 6, bezier = "expo", style = "popin 94%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2.5, bezier = "exit", style = "popin 97%" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 5, bezier = "expo" })
+hl.animation({ leaf = "fade", enabled = true, speed = 5, bezier = "expo" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 6, bezier = "expo" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 2.5, bezier = "exit" })
 hl.animation({ leaf = "fadeSwitch", enabled = false })
-hl.animation({ leaf = "layers", enabled = true, speed = 2.5, bezier = "easeOutQuint" })
-hl.animation({ leaf = "layersIn", enabled = true, speed = 2.5, bezier = "easeOutQuint", style = "fade" })
-hl.animation({ leaf = "layersOut", enabled = true, speed = 1.2, bezier = "linear", style = "fade" })
-hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 1.5, bezier = "quick" })
-hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.2, bezier = "linear" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "easeOutQuint", style = "slide" })
-hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 2, bezier = "easeOutQuint", style = "slidevert" })
-hl.animation({ leaf = "zoomFactor", enabled = true, speed = 3, bezier = "easeOutQuint" })
+hl.animation({ leaf = "fadeDim", enabled = true, speed = 6, bezier = "expo" })
+hl.animation({ leaf = "layers", enabled = true, speed = 5, bezier = "expo" })
+hl.animation({ leaf = "layersIn", enabled = true, speed = 5, bezier = "expo", style = "fade" })
+hl.animation({ leaf = "layersOut", enabled = true, speed = 2, bezier = "exit", style = "fade" })
+hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 5, bezier = "expo" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 2, bezier = "exit" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3.5, bezier = "expo", style = "slide" })
+hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 3.5, bezier = "expo", style = "slidevert" })
+hl.animation({ leaf = "zoomFactor", enabled = true, speed = 5, bezier = "expo" })
 
 -----------------
 ---- LAYOUTS ----

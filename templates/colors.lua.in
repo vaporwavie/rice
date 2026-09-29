@@ -5,6 +5,7 @@ return {
     bg_alt = "${BG_ALT}",
     bg_elev = "${BG_ELEV}",
     border = "${BORDER}",
+    line_strong = "${LINE_STRONG}",
     fg = "${FG}",
     fg_dim = "${FG_DIM}",
     muted = "${MUTED}",
@@ -13,5 +14,7 @@ return {
     red = "${RED}",
     green = "${GREEN}",
     yellow = "${YELLOW}",
+    blue = "${BLUE}",
+    purple = "${PURPLE}",
     cyan = "${CYAN}",
 }

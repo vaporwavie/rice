@@ -4,6 +4,7 @@
   "bgAlt": "#${BG_ALT}",
   "bgElev": "#${BG_ELEV}",
   "border": "#${BORDER}",
+  "lineStrong": "#${LINE_STRONG}",
   "fg": "#${FG}",
   "fgDim": "#${FG_DIM}",
   "muted": "#${MUTED}",
