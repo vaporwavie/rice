@@ -19,6 +19,7 @@ return function(ctx)
     hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(cfg .. "/theme toggle"))
 
     -- Windows
+    hl.bind(mod .. " + SHIFT + Q", hl.dsp.window.kill())
     hl.bind(mod .. " + Q", hl.dsp.window.close())
     hl.bind("ALT + F4", hl.dsp.window.close())
     hl.bind(mod .. " + CTRL + Escape", hl.dsp.window.kill())
@@ -58,7 +59,7 @@ return function(ctx)
     -- Focus, swap, resize
     local directions = { left = "left", right = "right", up = "up", down = "down", H = "left", L = "right", K = "up", J = "down" }
     for key, direction in pairs(directions) do
-        local focus_mod = (key == "left" or key == "right") and (mod .. " + CTRL") or mod
+        local focus_mod = (key == "H" or key == "L") and (mod .. " + CTRL") or mod
         hl.bind(focus_mod .. " + " .. key, hl.dsp.focus({ direction = direction }))
         hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.swap({ direction = direction }))
     end
@@ -74,8 +75,8 @@ return function(ctx)
         hl.bind(mod .. " + " .. key, hl.dsp.focus({ workspace = workspace }))
         hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = workspace }))
     end
-    hl.bind(mod .. " + right", hl.dsp.focus({ workspace = "e+1" }))
-    hl.bind(mod .. " + left", hl.dsp.focus({ workspace = "e-1" }))
+    hl.bind(mod .. " + L", hl.dsp.focus({ workspace = "e+1" }))
+    hl.bind(mod .. " + H", hl.dsp.focus({ workspace = "e-1" }))
     hl.bind(mod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
     hl.bind(mod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
     hl.bind(mod .. " + Tab", hl.dsp.focus({ workspace = "previous" }))
