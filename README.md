@@ -37,6 +37,7 @@ Choose Hyprland in SDDM and sign in. SDDM uses Weston for its login screen. `/et
 | Super+E | Nautilus |
 | Super+B | Default browser |
 | Super+PageDown | Keevy machine picker |
+| Super+A, then a letter | Open a panel: C calendar, E events, A audio, D display, B bluetooth, N network, I activity, K Keevy, P power, M Nina, H Nina history, J join the meeting alert, X dismiss it |
 | Super+Q, Alt+F4 | Close window |
 | Super+Ctrl+Esc | Kill window |
 | Super+F | Maximize |

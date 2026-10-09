@@ -3,6 +3,26 @@ return function(ctx)
     local mod = "SUPER"
     local terminal = home .. "/.local/bin/kitty"
     local launcher = "fuzzel --config=" .. cfg .. "/generated/fuzzel.ini"
+    local function shell(call) return hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call " .. call) end
+    local function panel(name) return shell("panel toggle " .. name) end
+
+    -- One-shot submap: a listed key runs its action and leaves, anything else just leaves.
+    local function oneshot(name, actions)
+        hl.define_submap(name, function()
+            for key, action in pairs(actions) do
+                hl.bind(key, function()
+                    hl.dispatch(hl.dsp.submap("reset"))
+                    hl.dispatch(action)
+                end, { ignore_mods = true })
+            end
+            -- Release binds consume modifier presses before catchall.
+            for _, key in ipairs({ "Super_L", "Super_R", "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R" }) do
+                hl.bind(key, hl.dsp.no_op(), { ignore_mods = true, release = true })
+            end
+            hl.bind("Escape", hl.dsp.submap("reset"), { ignore_mods = true })
+            hl.bind("catchall", hl.dsp.submap("reset"), { ignore_mods = true })
+        end)
+    end
 
     -- Apps
     hl.bind(mod .. " + Return", hl.dsp.exec_cmd(terminal))
@@ -11,11 +31,20 @@ return function(ctx)
     hl.bind("ALT + F2", hl.dsp.exec_cmd(launcher))
     hl.bind(mod .. " + E", hl.dsp.exec_cmd("nautilus --new-window"))
     hl.bind(mod .. " + B", hl.dsp.exec_cmd(cfg .. "/browser"))
-    hl.bind(mod .. " + Page_Down", hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call panel toggle keevy"))
+    hl.bind(mod .. " + Page_Down", panel("keevy"))
+
+    -- Panels: Super+A, then a letter.
+    hl.bind(mod .. " + A", hl.dsp.submap("panels"))
+    oneshot("panels", {
+        C = panel("calendar"), E = panel("events"), A = panel("audio"), D = panel("display"),
+        B = panel("bluetooth"), N = panel("network"), I = panel("activity"), K = panel("keevy"),
+        P = panel("power"), M = panel("nina"), H = panel("nina-full"),
+        J = shell("events join"), X = shell("events dismiss"),
+    })
 
     -- Session
     hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(cfg .. "/lock"))
-    hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call panel toggle power"))
+    hl.bind(mod .. " + SHIFT + E", panel("power"))
     hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(cfg .. "/theme toggle"))
 
     -- Windows
@@ -31,20 +60,11 @@ return function(ctx)
     hl.bind(mod .. " + T", hl.dsp.layout("togglesplit"))
     hl.bind(mod .. " + G", hl.dsp.group.toggle())
     hl.bind(mod .. " + SHIFT + G", hl.dsp.submap("join-group"))
-    hl.define_submap("join-group", function()
-        for key, direction in pairs({ L = "left", R = "right", U = "up", D = "down" }) do
-            hl.bind(key, function()
-                hl.dispatch(hl.dsp.submap("reset"))
-                hl.dispatch(hl.dsp.window.move({ into_group = direction }))
-            end, { ignore_mods = true })
-        end
-        -- Release binds consume modifier presses before catchall.
-        for _, key in ipairs({ "Super_L", "Super_R", "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R" }) do
-            hl.bind(key, hl.dsp.no_op(), { ignore_mods = true, release = true })
-        end
-        hl.bind("Escape", hl.dsp.submap("reset"), { ignore_mods = true })
-        hl.bind("catchall", hl.dsp.submap("reset"), { ignore_mods = true })
-    end)
+    local join = {}
+    for key, direction in pairs({ L = "left", R = "right", U = "up", D = "down" }) do
+        join[key] = hl.dsp.window.move({ into_group = direction })
+    end
+    oneshot("join-group", join)
     hl.bind(mod .. " + bracketright", hl.dsp.group.next())
     hl.bind(mod .. " + bracketleft", hl.dsp.group.prev())
     hl.bind("ALT + Tab", function()
