@@ -10,28 +10,28 @@ Item {
     Row {
         id: row
         anchors.centerIn: parent
-        spacing: 10
+        spacing: 6
         Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 1; height: 14; color: Theme.lineStrong }
         Label {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Todoist"
+            text: "Tasks"
             color: Todoist.error ? Theme.red : Theme.fgDim
         }
         Label {
             anchors.verticalCenter: parent.verticalCenter
             visible: Todoist.overdue.length > 0 && !Todoist.error
-            text: Todoist.overdue.length + " overdue"
+            text: Todoist.overdue.length + "o"
             color: Theme.red
         }
         Label {
             anchors.verticalCenter: parent.verticalCenter
             visible: Todoist.today.length > 0 && !Todoist.error
-            text: Todoist.today.length + " today"
+            text: Todoist.today.length + "t"
         }
         Label {
             anchors.verticalCenter: parent.verticalCenter
             visible: Todoist.error !== ""
-            text: "unavailable"
+            text: "!"
             color: Theme.red
         }
     }
@@ -48,7 +48,7 @@ Item {
     }
     Tooltip {
         anchorItem: root
-        text: "Open Todoist agenda"
+        text: Todoist.error ? "Todoist unavailable" : Todoist.overdue.length + " overdue, " + Todoist.today.length + " today"
         open: area.containsMouse
     }
 }
