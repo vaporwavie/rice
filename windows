@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+# windows: pick an open window in fuzzel and focus it. Most recent first, the focused one last.
+set -euo pipefail
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+pick() {
+    if [[ -n ${WINDOWS_PICKER:-} ]]; then $WINDOWS_PICKER; return; fi
+    fuzzel --config="$here/generated/fuzzel.ini" --dmenu --index --width 80 --prompt "window "
+}
+
+clients=$(hyprctl clients -j | jq -c '[.[] | select(.mapped and (.hidden | not))]
+    | sort_by(if .focusHistoryID == 0 then 1e9 else .focusHistoryID end)')
+[[ $(jq length <<<"$clients") -gt 0 ]] || exit 0
+
+# Rows carry fuzzel's NUL-separated icon hint, so they are piped, never captured into a variable.
+index=$(jq -r '.[] | "\(.workspace.name)  \(.class)  \(.title | gsub("[\\t\\n]"; " "))\u0000icon\u001f\(.class | ascii_downcase)"' <<<"$clients" | pick) || exit 0
+[[ $index =~ ^[0-9]+$ ]] || exit 0
+
+address=$(jq -r --argjson i "$index" '.[$i].address' <<<"$clients")
+hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null

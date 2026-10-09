@@ -34,6 +34,7 @@ Choose Hyprland in SDDM and sign in. SDDM uses Weston for its login screen. `/et
 | --- | --- |
 | Super+Enter | Kitty |
 | Super+Space, Alt+Space, Alt+F2 | App launcher |
+| Super+W | Pick an open window in fuzzel, most recent first |
 | Super+E | Nautilus |
 | Super+B | Default browser |
 | Super+PageDown | Keevy machine picker |
