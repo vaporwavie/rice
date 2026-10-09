@@ -94,10 +94,7 @@ PanelWindow {
                         id: actionArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: {
-                            if (root.event && root.event.join) NotionCalendar.join()
-                            else { NotionCalendar.openApp(); NotionCalendar.dismiss() }
-                        }
+                        onClicked: NotionCalendar.act()
                     }
                 }
             }

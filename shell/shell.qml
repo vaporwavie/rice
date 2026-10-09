@@ -56,6 +56,7 @@ ShellRoot {
         }
         function alert(): string { return NotionCalendar.alert ? NotionCalendar.alert.title : "" }
         function dismiss(): void { NotionCalendar.dismiss() }
+        function join(): void { NotionCalendar.act() }
     }
 
     IpcHandler {

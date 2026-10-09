@@ -32,6 +32,11 @@ Singleton {
         Quickshell.execDetached([Quickshell.env("HOME") + "/.local/bin/notion-calendar-linux", "--join"])
         dismiss()
     }
+    function act() {
+        if (!alert) return
+        if (alert.join) join()
+        else { openApp(); dismiss() }
+    }
 
     FileView {
         id: file
