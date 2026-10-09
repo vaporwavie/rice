@@ -16,6 +16,8 @@ The repo replaces `~/.config/hypr`, so move an existing one out of the way first
 
 Run `./theme auto` once to render `generated/`, which is gitignored, and `./install-units` once to link `systemd/` into `~/.config/systemd/user`.
 
+`imgview FILE` opens images in a Quickshell viewer: scroll zooms at the cursor, drag pans, Left/Right steps through the folder, `0` fits, `1` shows actual size, `q` or Escape closes. Link `applications/imgview.desktop` into `~/.local/share/applications` and run `xdg-mime default imgview.desktop image/png` (and the other types it lists) to make it the default.
+
 It expects `quickshell`, `node`, `kitty`, `fuzzel`, `dunst`, `hypridle`, `hyprlock`, `grim`, `slurp`, `wl-clipboard`, `jq`, `playerctl`, `nmcli`, `wpctl`, and `ddcutil`. See [Optional packages](#optional-packages) for the rest.
 
 The lock screen uses IBM Plex Sans, IBM Plex Mono, and Fraunces, and notifications use IBM Plex Sans. Put the Google Fonts files in `~/.local/share/fonts` and run `fc-cache -f`.

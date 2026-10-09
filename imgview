@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+# imgview FILE: opens an image in the Quickshell viewer, one window per call.
+set -euo pipefail
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+[[ $# -ge 1 ]] || { echo "usage: imgview FILE" >&2; exit 2; }
+file=${1#file://}
+IMGVIEW_FILE=$(realpath -- "$file") exec qs -p "$here/shell/ImageViewer.qml"

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Image Viewer
+Comment=View images
+Exec=/home/powerstation/.config/hypr/imgview %f
+Icon=image-x-generic
+Terminal=false
+NoDisplay=false
+Categories=Graphics;Viewer;
+MimeType=image/png;image/jpeg;image/gif;image/webp;image/svg+xml;image/bmp;image/tiff;image/avif;image/heif;image/heic;image/jxl;image/x-icon;image/vnd.microsoft.icon;image/x-tga;image/qoi;image/x-portable-anymap;image/x-portable-pixmap;image/x-portable-graymap;image/x-portable-bitmap;

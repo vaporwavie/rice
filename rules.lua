@@ -27,6 +27,8 @@ return function(ctx)
     rule({ tag = "floating-window" }, { center = true })
     rule({ tag = "floating-window" }, { size = "875 600" })
 
+    rule("^org\\.quickshell$", { float = true, center = true, size = "(monitor_w*0.6) (monitor_h*0.7)" })
+
     hl.layer_rule({ name = "selection-still", match = { namespace = "^(selection)$" }, no_anim = true })
     hl.layer_rule({ name = "wallpaper-still", match = { namespace = "^(wallpaper|awww-daemon|altura-pillar|altura-desktop)$" }, no_anim = true })
 
