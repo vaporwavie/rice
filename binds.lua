@@ -14,7 +14,7 @@ return function(ctx)
     hl.bind(mod .. " + Page_Down", hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call panel toggle keevy"))
 
     -- Session
-    hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd(cfg .. "/lock"))
+    hl.bind(mod .. " + Escape", hl.dsp.exec_cmd(cfg .. "/lock"))
     hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd("qs -p " .. cfg .. "/shell ipc call panel toggle power"))
     hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(cfg .. "/theme toggle"))
 

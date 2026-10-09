@@ -64,7 +64,7 @@ Choose Hyprland in SDDM and sign in. SDDM uses Weston for its login screen. `/et
 | Super+Print | Screenshot the window |
 | Super+Shift+V | Clipboard history, needs cliphist |
 | Super+Shift+T | Toggle day and night theme |
-| Super+Ctrl+L | Lock |
+| Super+Esc | Lock |
 | Super+Shift+E | Session menu |
 
 Caps Lock is Escape.
