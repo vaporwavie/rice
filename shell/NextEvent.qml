@@ -18,13 +18,9 @@ Item {
         Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 1; height: 14; color: Theme.lineStrong }
         Label {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Notion"
-            dim: true
-        }
-        Label {
-            anchors.verticalCenter: parent.verticalCenter
             width: Math.min(implicitWidth, root.maxTitleWidth)
-            text: root.event ? root.event.title : ""
+            text: root.event ? root.event.title : "No events"
+            dim: root.event === null
             visible: text !== ""
             textFormat: Text.PlainText
         }
