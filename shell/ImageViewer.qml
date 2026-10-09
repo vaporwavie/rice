@@ -16,6 +16,10 @@ FloatingWindow {
     implicitHeight: 800
     color: Theme.bg
 
+    // A closed window would otherwise leave qs alive, and its hot reload of shell/ reopens it.
+    onVisibleChanged: if (!visible) Qt.quit()
+    Component.onCompleted: Quickshell.watchFiles = false
+
     function step(delta) {
         if (files.count < 2)
             return;
