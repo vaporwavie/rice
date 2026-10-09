@@ -158,6 +158,12 @@ return function(ctx)
         hl.bind(mod .. " + SHIFT + V", hl.dsp.exec_cmd("sh -c 'cliphist list | " .. launcher .. " --dmenu --width 60 | cliphist decode | wl-copy'"))
     end
 
+    -- Notifications
+    hl.bind(mod .. " + N", hl.dsp.exec_cmd("dunstctl close"))
+    hl.bind(mod .. " + SHIFT + N", hl.dsp.exec_cmd("dunstctl close-all"))
+    hl.bind(mod .. " + grave", hl.dsp.exec_cmd("dunstctl history-pop"))
+    hl.bind(mod .. " + CTRL + N", hl.dsp.exec_cmd("dunstctl context"))
+
     -- Media
     hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
     hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true })
