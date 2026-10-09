@@ -67,14 +67,28 @@ return function(ctx)
     oneshot("join-group", join)
     hl.bind(mod .. " + bracketright", hl.dsp.group.next())
     hl.bind(mod .. " + bracketleft", hl.dsp.group.prev())
-    hl.bind("ALT + Tab", function()
-        hl.dispatch(hl.dsp.window.cycle_next())
+    -- Steps in stable id order so the bar's window tabs (shell/windows.js) show exactly where Alt+Tab lands.
+    local function cycle(step)
+        local current = hl.get_active_window()
+        local workspace = current and current.workspace or hl.get_active_workspace()
+        if not workspace then return end
+        local targets = {}
+        for _, window in ipairs(hl.get_workspace_windows(workspace)) do
+            if window.mapped and not window.hidden then table.insert(targets, window) end
+        end
+        if #targets == 0 then return end
+        table.sort(targets, function(a, b) return a.stable_id < b.stable_id end)
+        local index = 0
+        for i, window in ipairs(targets) do
+            if current and window.address == current.address then index = i end
+        end
+        if index == 0 then index = step > 0 and 0 or 1 end
+        local target = targets[(index - 1 + step) % #targets + 1]
+        hl.dispatch(hl.dsp.focus({ window = target }))
         hl.dispatch(hl.dsp.window.bring_to_top())
-    end)
-    hl.bind("ALT + SHIFT + Tab", function()
-        hl.dispatch(hl.dsp.window.cycle_next({ direction = "prev" }))
-        hl.dispatch(hl.dsp.window.bring_to_top())
-    end)
+    end
+    hl.bind("ALT + Tab", function() cycle(1) end)
+    hl.bind("ALT + SHIFT + Tab", function() cycle(-1) end)
 
     -- Focus, swap, resize
     local directions = { left = "left", right = "right", up = "up", down = "down", H = "left", L = "right", K = "up", J = "down" }

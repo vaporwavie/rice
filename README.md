@@ -47,7 +47,7 @@ Choose Hyprland in SDDM and sign in. SDDM uses Weston for its login screen. `/et
 | Super+C | Center floating window |
 | Super+T | Toggle split direction |
 | Super+G | Toggle group, Super+[ and Super+] switch tabs |
-| Alt+Tab, Alt+Shift+Tab | Cycle windows |
+| Alt+Tab, Alt+Shift+Tab | Cycle the workspace's windows in bar order: the bar marks the focused one with a line and the next stop with a dot |
 | Super+arrows or HJKL | Focus window |
 | Super+Shift+arrows or HJKL | Swap window |
 | Super+Alt+arrows | Resize window |
