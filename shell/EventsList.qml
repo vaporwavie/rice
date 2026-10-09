@@ -31,12 +31,15 @@ Column {
                         Item {
                             id: row
                             required property var modelData
+                            property bool selected: false
+                            readonly property bool navigable: true
+                            function activate() { root.opened() }
                             width: day.width
                             height: Theme.rowHeight
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: area.containsMouse ? Theme.bgElev : "transparent"
+                                color: area.containsMouse || row.selected ? Theme.bgElev : "transparent"
                             }
                             Label {
                                 id: time

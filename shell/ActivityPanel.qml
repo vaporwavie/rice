@@ -9,6 +9,6 @@ Panel {
 
     ActivityView {
         width: root.contentWidth
-        onConnections: Panels.toggle("network", Panels.screenName)
+        onConnections: Panels.replace("network")
     }
 }

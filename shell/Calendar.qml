@@ -5,10 +5,6 @@ Panel {
     id: root
     name: "calendar"
     contentWidth: 700
-    // A native popup grab needs the input serial from a click on the bar.
-    grabFocus: Panels.fromPointer
-    grab: !grabFocus
-    onVisibleChanged: if (!visible && open) root.close()
 
     property date shown: new Date()
     property string selected: ""
@@ -16,7 +12,14 @@ Panel {
     readonly property var groups: Todoist.agenda(selected)
 
     onOpenChanged: if (open) { reset(); Todoist.refresh() }
-    onBackingWindowVisibleChanged: if (backingWindowVisible) Qt.callLater(() => body.forceActiveFocus())
+    extraKeys: event => {
+        if (event.key === Qt.Key_Left || event.key === Qt.Key_H) root.shift(-1)
+        else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) root.shift(1)
+        else if (event.key === Qt.Key_T) root.reset()
+        else if (event.key === Qt.Key_R) Todoist.refresh()
+        else return false
+        return true
+    }
 
     function reset() { shown = new Date(); selected = "" }
     function shift(months) {
@@ -38,17 +41,6 @@ Panel {
         id: body
         width: root.contentWidth
         spacing: 10
-        focus: true
-
-        Keys.onPressed: event => {
-            if (event.key === Qt.Key_Escape) root.close()
-            else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) root.shift(-1)
-            else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) root.shift(1)
-            else if (event.key === Qt.Key_T) root.reset()
-            else if (event.key === Qt.Key_R) Todoist.refresh()
-            else return
-            event.accepted = true
-        }
 
         Item {
             width: parent.width

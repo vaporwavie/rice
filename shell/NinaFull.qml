@@ -9,19 +9,22 @@ Panel {
     id: root
     name: "nina-full"
     contentWidth: 560
-    grab: false
-    grabFocus: true
     property string query: ""
     readonly property var entries: Nina.history.filter(entry => Format.matches(entry, query))
     readonly property var today: Format.todayStats(Nina.history, clock.date.getTime())
 
-    onVisibleChanged: if (!visible && open) root.close()
     onOpenChanged: {
         if (!open) return
         query = ""
         search.text = ""
         list.positionViewAtBeginning()
         Nina.refresh()
+    }
+    extraKeys: event => {
+        if (event.key === Qt.Key_Escape && search.text !== "") search.text = ""
+        else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) Nina.copy(root.entries[0])
+        else return root.type(search, event)
+        return true
     }
     onBackingWindowVisibleChanged: if (backingWindowVisible) Qt.callLater(() => search.forceActiveFocus())
 

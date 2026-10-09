@@ -18,6 +18,8 @@ PanelWindow {
     WlrLayershell.namespace: "hypr-bar"
     WlrLayershell.keyboardFocus: Panels.open !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
+    PanelKeys { }
+
     // The bar settles in like the landing nav: a short rise and fade on the site's curve.
     property real arrival: 0
     NumberAnimation on arrival { from: 0; to: 1; duration: Theme.hero; easing.type: Theme.easing }

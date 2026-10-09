@@ -8,6 +8,7 @@ Panel {
     property var item
     property var stack: []
     contentWidth: 240
+    grabFocus: false
 
     QsMenuOpener { id: opener; menu: root.item ? root.item.menu : null }
     Component { id: subOpener; QsMenuOpener { } }

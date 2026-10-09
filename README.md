@@ -69,6 +69,8 @@ Choose Hyprland in SDDM and sign in. SDDM uses Weston for its login screen. `/et
 
 Caps Lock is Escape.
 
+Every panel takes the keyboard: J/K, Up/Down, or Tab move between rows, Enter or Space activates, H/L or Left/Right nudge a slider, and Escape closes. Panels opened from a key start with the first row selected.
+
 ## Look
 
 The palette, type, and motion come from the Altura landing page (`apps/landing` and `packages/design-system` in altura-software). Night is ink black with bone text, day is its inversion on warm bone. Every surface is flat and edged with hairlines. Window borders are 1px and lit from the top, corners are square, and there is no blur or shadow. The bar and launcher stay in Geist Mono. Everything moves on one ease-out-expo curve. Windows and panels fade in with a small rise, workspaces slide horizontally, and nothing bounces.

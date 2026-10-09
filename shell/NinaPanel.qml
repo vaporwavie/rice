@@ -26,11 +26,14 @@ Panel {
             width: parent.width
             height: take.implicitHeight + 16
             visible: Nina.latest !== null
+            property bool selected: false
+            readonly property bool navigable: true
+            function activate() { Nina.copy(Nina.latest) }
             readonly property bool copied: Nina.latest && Nina.copiedId === Nina.latest.id
 
             Rectangle {
                 anchors.fill: parent
-                color: takeArea.containsMouse ? Theme.bgElev : "transparent"
+                color: takeArea.containsMouse || latestTake.selected ? Theme.bgElev : "transparent"
                 Behavior on color { ColorAnimation { duration: Theme.quick; easing.type: Theme.easing } }
             }
 
@@ -52,7 +55,7 @@ Panel {
                     }
                     Label {
                         anchors.right: parent.right
-                        text: latestTake.copied ? "Copied" : takeArea.containsMouse ? "Copy" : ""
+                        text: latestTake.copied ? "Copied" : takeArea.containsMouse || latestTake.selected ? "Copy" : ""
                         color: Theme.accent
                         font.pixelSize: Theme.fontSize - 2
                     }
@@ -80,7 +83,7 @@ Panel {
             icon: "󰋚"
             text: "History"
             trailing: Nina.history.length > 0 ? String(Nina.history.length) : ""
-            onClicked: Panels.toggle("nina-full", Panels.screenName)
+            onClicked: Panels.replace("nina-full")
         }
         PanelRow {
             icon: Nina.connected ? "󰒓" : "󰐊"

@@ -7,14 +7,18 @@ Item {
     property string icon: ""
     property string trailing: ""
     property bool active: false
+    property bool selected: false
+    readonly property bool navigable: true
+    readonly property bool lit: selected || area.containsMouse
     signal clicked()
+    function activate() { clicked() }
 
     width: parent ? parent.width : Theme.panelWidth
     height: Theme.rowHeight
 
     Rectangle {
         anchors.fill: parent
-        color: area.containsMouse && root.enabled ? Theme.bgElev : "transparent"
+        color: root.lit && root.enabled ? Theme.bgElev : "transparent"
         Behavior on color { ColorAnimation { duration: Theme.quick; easing.type: Theme.easing } }
     }
     Label {
@@ -34,7 +38,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
         text: root.text
-        color: !root.enabled ? Theme.muted : (root.active || area.containsMouse ? Theme.accent : Theme.fg)
+        color: !root.enabled ? Theme.muted : (root.active || root.lit ? Theme.accent : Theme.fg)
     }
     Label {
         id: tail
